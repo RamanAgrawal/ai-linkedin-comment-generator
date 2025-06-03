@@ -1,0 +1,41 @@
+{
+  "manifest_version": 3,
+  "name": "LinkedComment AI",
+  "version": "1.0.0",
+  "description": "AI-powered LinkedIn comment suggestions while scrolling through posts",
+
+  "permissions": ["scripting", "activeTab", "storage"],
+
+  "host_permissions": ["https://www.linkedin.com/*"],
+
+  "background": {
+    "service_worker": "background.js"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["https://www.linkedin.com/*"],
+      "js": ["content.js"],
+      "css": ["styles.css"],
+      "run_at": "document_end"
+    }
+  ],
+
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "LinkedComment AI Settings"
+  },
+
+  "icons": {
+    "16": "icons/icon-16.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+
+  "web_accessible_resources": [
+    {
+      "resources": ["injection.js", "overlay.js"],
+      "matches": ["https://www.linkedin.com/*"]
+    }
+  ]
+}

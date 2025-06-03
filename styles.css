@@ -1,0 +1,513 @@
+/* LinkedComment AI Styles */
+
+/* AI Button Integration with LinkedIn's Native Design */
+.linkedcomment-ai-button {
+  display: flex;
+  align-items: center;
+  margin-left: 8px;
+}
+
+.linkedcomment-ai-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+    sans-serif;
+  color: rgba(0, 0, 0, 0.6);
+  transition: all 0.2s ease;
+  height: 32px;
+  min-width: 110px;
+  position: relative;
+}
+
+.linkedcomment-ai-btn:hover {
+  background-color: rgba(0, 0, 0, 0.08);
+  color: rgba(0, 0, 0, 0.9);
+}
+
+.linkedcomment-ai-btn:active {
+  background-color: rgba(0, 0, 0, 0.12);
+  transform: scale(0.98);
+}
+
+.linkedcomment-ai-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.linkedcomment-ai-content {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.linkedcomment-ai-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.linkedcomment-ai-text {
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.linkedcomment-ai-loading {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  color: #0077b5;
+}
+
+.linkedcomment-ai-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid #e6e6e6;
+  border-top: 2px solid #0077b5;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Popup Styles */
+.linkedcomment-ai-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fadeIn 0.3s ease;
+}
+
+.linkedcomment-ai-popup {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  animation: slideUp 0.3s ease;
+}
+
+.linkedcomment-ai-popup-header {
+  background: linear-gradient(135deg, #0077b5, #005885);
+  color: white;
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.linkedcomment-ai-popup-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.linkedcomment-ai-popup-close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  line-height: 1;
+  transition: background-color 0.2s ease;
+}
+
+.linkedcomment-ai-popup-close:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.linkedcomment-ai-popup-content {
+  padding: 24px;
+}
+
+.linkedcomment-ai-popup-post-preview {
+  background: #f8f9fa;
+  border-left: 4px solid #0077b5;
+  padding: 16px;
+  margin-bottom: 20px;
+  border-radius: 0 8px 8px 0;
+}
+
+.linkedcomment-ai-popup-post-text {
+  margin-top: 8px;
+  font-style: italic;
+  color: #666;
+  line-height: 1.4;
+}
+
+.linkedcomment-ai-popup-result {
+  min-height: 120px;
+}
+
+.linkedcomment-ai-popup-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 40px 0;
+  color: #0077b5;
+  font-size: 16px;
+}
+
+.linkedcomment-ai-popup-loading .linkedcomment-ai-spinner {
+  width: 24px;
+  height: 24px;
+  border-width: 3px;
+}
+
+.linkedcomment-ai-popup-comment {
+  background: #f0f8ff;
+  border: 1px solid #0077b5;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.linkedcomment-ai-popup-comment-label {
+  font-weight: 600;
+  color: #0077b5;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.linkedcomment-ai-popup-comment-text {
+  line-height: 1.5;
+  color: #ffffff;
+  font-size: 15px;
+  white-space: pre-wrap;
+}
+
+.linkedcomment-ai-popup-error {
+  background: #fff5f5;
+  border: 1px solid #feb2b2;
+  color: #c53030;
+  padding: 16px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.linkedcomment-ai-popup-actions {
+  padding: 0 24px 24px;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.linkedcomment-ai-popup-btn {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.linkedcomment-ai-popup-insert {
+  background: #0077b5;
+  color: white;
+}
+
+.linkedcomment-ai-popup-insert:hover {
+  background: #005885;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 119, 181, 0.3);
+}
+
+.linkedcomment-ai-popup-copy {
+  background: #f1f3f4;
+  color: #5f6368;
+}
+
+.linkedcomment-ai-popup-copy:hover {
+  background: #e8eaed;
+  transform: translateY(-1px);
+}
+
+.linkedcomment-ai-popup-regenerate {
+  background: #28a745;
+  color: white;
+}
+
+.linkedcomment-ai-popup-regenerate:hover {
+  background: #218838;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+/* Toast Notifications */
+.linkedcomment-ai-toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  z-index: 10001;
+  transform: translateX(400px);
+  opacity: 0;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.linkedcomment-ai-toast.show {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.linkedcomment-ai-toast-success {
+  background: #28a745;
+}
+
+.linkedcomment-ai-toast-error {
+  background: #dc3545;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .linkedcomment-ai-popup {
+    width: 95%;
+    max-height: 90vh;
+  }
+
+  .linkedcomment-ai-popup-content {
+    padding: 16px;
+  }
+
+  .linkedcomment-ai-popup-actions {
+    padding: 0 16px 16px;
+    flex-direction: column;
+  }
+
+  .linkedcomment-ai-popup-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .linkedcomment-ai-btn {
+    padding: 6px 8px;
+    min-width: 90px;
+    font-size: 13px;
+  }
+
+  .linkedcomment-ai-text {
+    font-size: 13px;
+  }
+
+  .linkedcomment-ai-icon {
+    font-size: 14px;
+  }
+}
+
+/* Compact mode for smaller screens or dense layouts */
+@media (max-width: 480px) {
+  .linkedcomment-ai-text {
+    display: none;
+  }
+
+  .linkedcomment-ai-btn {
+    min-width: 40px;
+    width: 40px;
+    height: 40px;
+    padding: 8px;
+    border-radius: 50%;
+  }
+
+  .linkedcomment-ai-icon {
+    font-size: 18px;
+  }
+
+  .linkedcomment-ai-toast {
+    right: 10px;
+    left: 10px;
+    text-align: center;
+  }
+}
+
+/* Ensure button doesn't interfere with LinkedIn's layout */
+.linkedcomment-ai-button * {
+  box-sizing: border-box;
+}
+
+/* Focus states for accessibility */
+.linkedcomment-ai-btn:focus,
+.linkedcomment-ai-popup-btn:focus,
+.linkedcomment-ai-popup-close:focus {
+  outline: 2px solid #0077b5;
+  outline-offset: 2px;
+}
+
+.linkedcomment-ai-btn:focus:not(:focus-visible),
+.linkedcomment-ai-popup-btn:focus:not(:focus-visible),
+.linkedcomment-ai-popup-close:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .linkedcomment-ai-btn {
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .linkedcomment-ai-btn:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 1);
+  }
+
+  .linkedcomment-ai-btn:active {
+    background-color: rgba(255, 255, 255, 0.12);
+  }
+
+  .linkedcomment-ai-spinner {
+    border-color: #555;
+    border-top-color: #0077b5;
+  }
+
+  .linkedcomment-ai-popup {
+    background: #1a1a1a;
+    color: #e6e6e6;
+  }
+
+  .linkedcomment-ai-popup-post-preview {
+    background: #2a2a2a;
+    color: #ccc;
+  }
+
+  .linkedcomment-ai-popup-comment {
+    background: #2a3441;
+    border-color: #0077b5;
+    color: #e6e6e6;
+  }
+}
+
+/* Integration with LinkedIn's existing button styles */
+.feed-shared-social-actions .linkedcomment-ai-button,
+.social-actions-buttons .linkedcomment-ai-button {
+  flex: 0 0 auto;
+}
+
+.linkedcomment-ai-button {
+  align-self: center;
+}
+
+/* Ensure consistent spacing with LinkedIn's button group */
+.feed-shared-social-actions .linkedcomment-ai-button {
+  margin-left: 0;
+}
+
+.feed-shared-social-actions .linkedcomment-ai-button:not(:first-child) {
+  margin-left: 8px;
+}
+
+/* Success and Error States */
+.linkedcomment-ai-btn[style*="background: rgb(40, 167, 69)"] {
+  color: white !important;
+}
+
+.linkedcomment-ai-btn[style*="background: rgb(220, 53, 69)"] {
+  color: white !important;
+}
+
+/* Animation for button state changes */
+.linkedcomment-ai-btn .linkedcomment-ai-text {
+  transition: all 0.3s ease;
+}
+
+/* Loading state adjustments */
+.linkedcomment-ai-loading span {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Hover effects that match LinkedIn's design language */
+.linkedcomment-ai-btn:hover .linkedcomment-ai-icon {
+  transform: scale(1.1);
+  transition: transform 0.2s ease;
+}
+
+/* Success state animation */
+@keyframes successPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.linkedcomment-ai-btn[style*="background: rgb(40, 167, 69)"] {
+  animation: successPulse 0.3s ease;
+}
+
+/* Error state animation */
+@keyframes errorShake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-2px);
+  }
+  75% {
+    transform: translateX(2px);
+  }
+}
+
+.linkedcomment-ai-btn[style*="background: rgb(220, 53, 69)"] {
+  animation: errorShake 0.3s ease;
+}
