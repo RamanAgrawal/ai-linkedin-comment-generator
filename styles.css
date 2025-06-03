@@ -4,7 +4,13 @@
 .linkedcomment-ai-button {
   display: flex;
   align-items: center;
-  margin-left: 8px;
+  margin: 0;
+  padding: 0;
+}
+
+.linkedcomment-ai-button.feed-shared-footer__social-action {
+  flex: 1;
+  justify-content: center;
 }
 
 .linkedcomment-ai-btn {
@@ -13,7 +19,7 @@
   justify-content: center;
   background: none;
   border: none;
-  padding: 8px 12px;
+  padding: 8px;
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
@@ -21,15 +27,19 @@
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
     sans-serif;
   color: rgba(0, 0, 0, 0.6);
-  transition: all 0.2s ease;
-  height: 32px;
-  min-width: 110px;
+  transition: all 0.15s ease;
+  height: 40px;
+  min-width: 72px;
   position: relative;
+  width: 100%;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .linkedcomment-ai-btn:hover {
   background-color: rgba(0, 0, 0, 0.08);
   color: rgba(0, 0, 0, 0.9);
+  transform: none;
 }
 
 .linkedcomment-ai-btn:active {
@@ -45,30 +55,44 @@
 .linkedcomment-ai-content {
   display: flex;
   align-items: center;
-  gap: 6px;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
 }
 
 .linkedcomment-ai-icon {
-  font-size: 16px;
+  font-size: 20px;
   line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .linkedcomment-ai-text {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
   white-space: nowrap;
+  line-height: 1.2;
 }
 
 .linkedcomment-ai-loading {
   display: none;
   align-items: center;
-  gap: 6px;
+  flex-direction: column;
+  gap: 4px;
   color: #0077b5;
+  width: 100%;
+}
+
+.linkedcomment-ai-loading span {
+  font-size: 10px;
+  font-weight: 500;
+  text-align: center;
 }
 
 .linkedcomment-ai-spinner {
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
   border: 2px solid #e6e6e6;
   border-top: 2px solid #0077b5;
   border-radius: 50%;
@@ -109,6 +133,8 @@
   overflow: hidden;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   animation: slideUp 0.3s ease;
+  display: flex;
+  flex-direction: column;
 }
 
 .linkedcomment-ai-popup-header {
@@ -118,6 +144,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .linkedcomment-ai-popup-header h3 {
@@ -144,6 +171,9 @@
 
 .linkedcomment-ai-popup-content {
   padding: 24px;
+  flex: 1;
+  overflow-y: auto;
+  min-height: 200px;
 }
 
 .linkedcomment-ai-popup-post-preview {
@@ -152,6 +182,7 @@
   padding: 16px;
   margin-bottom: 20px;
   border-radius: 0 8px 8px 0;
+  flex-shrink: 0;
 }
 
 .linkedcomment-ai-popup-post-text {
@@ -161,8 +192,65 @@
   line-height: 1.4;
 }
 
+.linkedcomment-ai-popup-tone-selection {
+  margin-bottom: 20px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e1e5e9;
+}
+
+.linkedcomment-ai-popup-tone-label {
+  display: block;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.linkedcomment-ai-popup-tone-options {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.linkedcomment-ai-popup-tone-btn {
+  padding: 8px 16px;
+  border: 2px solid #e1e5e9;
+  border-radius: 20px;
+  background: white;
+  color: #666;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 100px;
+  justify-content: center;
+}
+
+.linkedcomment-ai-popup-tone-btn:hover {
+  border-color: #0077b5;
+  background: #f0f8ff;
+  color: #0077b5;
+}
+
+.linkedcomment-ai-popup-tone-btn.active {
+  border-color: #0077b5;
+  background: #0077b5;
+  color: white;
+}
+
+.linkedcomment-ai-popup-tone-btn.active:hover {
+  background: #005885;
+  border-color: #005885;
+}
+
 .linkedcomment-ai-popup-result {
   min-height: 120px;
+  flex: 1;
 }
 
 .linkedcomment-ai-popup-loading {
@@ -187,6 +275,8 @@
   border-radius: 8px;
   padding: 16px;
   margin-bottom: 20px;
+  max-height: 300px;
+  overflow-y: auto;
 }
 
 .linkedcomment-ai-popup-comment-label {
@@ -194,11 +284,15 @@
   color: #0077b5;
   margin-bottom: 8px;
   font-size: 14px;
+  position: sticky;
+  top: 0;
+  background: #f0f8ff;
+  padding-bottom: 8px;
 }
 
 .linkedcomment-ai-popup-comment-text {
   line-height: 1.5;
-  color: #ffffff;
+  color: #333;
   font-size: 15px;
   white-space: pre-wrap;
 }
@@ -213,10 +307,15 @@
 }
 
 .linkedcomment-ai-popup-actions {
-  padding: 0 24px 24px;
+  padding: 20px 24px;
   display: flex;
   gap: 12px;
   justify-content: flex-end;
+  border-top: 1px solid #e1e5e9;
+  background: white;
+  flex-shrink: 0;
+  position: sticky;
+  bottom: 0;
 }
 
 .linkedcomment-ai-popup-btn {
@@ -319,15 +418,31 @@
 @media (max-width: 768px) {
   .linkedcomment-ai-popup {
     width: 95%;
-    max-height: 90vh;
+    max-height: 85vh;
   }
 
   .linkedcomment-ai-popup-content {
     padding: 16px;
+    min-height: 150px;
+  }
+
+  .linkedcomment-ai-popup-tone-selection {
+    padding: 12px;
+    margin-bottom: 16px;
+  }
+
+  .linkedcomment-ai-popup-tone-options {
+    gap: 6px;
+  }
+
+  .linkedcomment-ai-popup-tone-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+    min-width: 80px;
   }
 
   .linkedcomment-ai-popup-actions {
-    padding: 0 16px 16px;
+    padding: 16px;
     flex-direction: column;
   }
 
@@ -336,37 +451,89 @@
     justify-content: center;
   }
 
+  .linkedcomment-ai-popup-comment {
+    max-height: 200px;
+    padding: 12px;
+  }
+
+  .linkedcomment-ai-popup-header {
+    padding: 16px;
+  }
+
   .linkedcomment-ai-btn {
-    padding: 6px 8px;
-    min-width: 90px;
-    font-size: 13px;
+    padding: 6px;
+    min-width: 60px;
+    height: 36px;
   }
 
   .linkedcomment-ai-text {
-    font-size: 13px;
+    font-size: 11px;
   }
 
   .linkedcomment-ai-icon {
-    font-size: 14px;
+    font-size: 18px;
   }
 }
 
 /* Compact mode for smaller screens or dense layouts */
 @media (max-width: 480px) {
+  .linkedcomment-ai-popup {
+    width: 98%;
+    max-height: 90vh;
+  }
+
+  .linkedcomment-ai-popup-content {
+    padding: 12px;
+    min-height: 120px;
+  }
+
+  .linkedcomment-ai-popup-tone-selection {
+    padding: 10px;
+    margin-bottom: 12px;
+  }
+
+  .linkedcomment-ai-popup-tone-options {
+    gap: 4px;
+    justify-content: center;
+  }
+
+  .linkedcomment-ai-popup-tone-btn {
+    padding: 5px 8px;
+    font-size: 11px;
+    min-width: 70px;
+    flex: 1;
+  }
+
+  .linkedcomment-ai-popup-comment {
+    max-height: 150px;
+    padding: 10px;
+  }
+
+  .linkedcomment-ai-popup-header {
+    padding: 12px;
+  }
+
+  .linkedcomment-ai-popup-header h3 {
+    font-size: 16px;
+  }
+
   .linkedcomment-ai-text {
-    display: none;
+    display: block;
+    font-size: 10px;
   }
 
   .linkedcomment-ai-btn {
-    min-width: 40px;
-    width: 40px;
-    height: 40px;
-    padding: 8px;
-    border-radius: 50%;
+    min-width: 50px;
+    height: 32px;
+    padding: 4px;
   }
 
   .linkedcomment-ai-icon {
-    font-size: 18px;
+    font-size: 16px;
+  }
+
+  .linkedcomment-ai-content {
+    gap: 1px;
   }
 
   .linkedcomment-ai-toast {
@@ -435,20 +602,28 @@
 /* Integration with LinkedIn's existing button styles */
 .feed-shared-social-actions .linkedcomment-ai-button,
 .social-actions-buttons .linkedcomment-ai-button {
-  flex: 0 0 auto;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .linkedcomment-ai-button {
-  align-self: center;
+  align-self: stretch;
 }
 
 /* Ensure consistent spacing with LinkedIn's button group */
+.feed-shared-social-actions {
+  gap: 0;
+}
+
 .feed-shared-social-actions .linkedcomment-ai-button {
-  margin-left: 0;
+  margin: 0;
+  border-right: none;
 }
 
 .feed-shared-social-actions .linkedcomment-ai-button:not(:first-child) {
-  margin-left: 8px;
+  margin-left: 0;
 }
 
 /* Success and Error States */
@@ -510,4 +685,68 @@
 
 .linkedcomment-ai-btn[style*="background: rgb(220, 53, 69)"] {
   animation: errorShake 0.3s ease;
+}
+
+/* Custom scrollbar for comment section */
+.linkedcomment-ai-popup-comment::-webkit-scrollbar {
+  width: 8px;
+}
+
+.linkedcomment-ai-popup-comment::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.linkedcomment-ai-popup-comment::-webkit-scrollbar-thumb {
+  background: #0077b5;
+  border-radius: 4px;
+}
+
+.linkedcomment-ai-popup-comment::-webkit-scrollbar-thumb:hover {
+  background: #005885;
+}
+
+.linkedcomment-ai-popup-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.linkedcomment-ai-popup-content::-webkit-scrollbar-track {
+  background: #f8f9fa;
+  border-radius: 4px;
+}
+
+.linkedcomment-ai-popup-content::-webkit-scrollbar-thumb {
+  background: #dee2e6;
+  border-radius: 4px;
+}
+
+.linkedcomment-ai-popup-content::-webkit-scrollbar-thumb:hover {
+  background: #adb5bd;
+}
+
+/* Ensure smooth scrolling */
+.linkedcomment-ai-popup-comment,
+.linkedcomment-ai-popup-content {
+  scroll-behavior: smooth;
+}
+
+/* Add scroll indicator shadow */
+.linkedcomment-ai-popup-comment {
+  background: linear-gradient(#f0f8ff 30%, rgba(240, 248, 255, 0)),
+    linear-gradient(rgba(240, 248, 255, 0), #f0f8ff 70%) 0 100%,
+    radial-gradient(
+      farthest-side at 50% 0,
+      rgba(0, 0, 0, 0.2),
+      rgba(0, 0, 0, 0)
+    ),
+    radial-gradient(
+        farthest-side at 50% 100%,
+        rgba(0, 0, 0, 0.2),
+        rgba(0, 0, 0, 0)
+      )
+      0 100%;
+  background-color: #f0f8ff;
+  background-repeat: no-repeat;
+  background-attachment: local, local, scroll, scroll;
+  background-size: 100% 30px, 100% 30px, 100% 15px, 100% 15px;
 }

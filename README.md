@@ -8,7 +8,7 @@ LinkedComment AI is a Chrome browser extension that enhances your LinkedIn exper
 
 ## ✨ Features
 
-- **🤖 AI-Powered Comments**: Generates professional, contextual comments for LinkedIn posts
+- **🤖 AI-Powered Comments**: Generates professional, contextual comments for LinkedIn posts using DeepSeek AI
 - **🎯 Native Integration**: AI button seamlessly integrated next to LinkedIn's Send button
 - **🎨 Multiple Tones**: Choose between Professional, Friendly, or Witty comment styles
 - **⚡ One-Click Magic**: Generate and auto-insert comments with a single button click
@@ -39,7 +39,7 @@ LinkedComment AI is a Chrome browser extension that enhances your LinkedIn exper
 
    - Click the LinkedComment AI icon in your Chrome toolbar
    - Configure your preferences (tone, auto-generation, etc.)
-   - Optionally add your OpenAI API key for enhanced comments
+   - Optionally add your DeepSeek API key for enhanced AI comments
 
 4. **Start Using**
    - Navigate to [LinkedIn](https://www.linkedin.com/feed/)
@@ -49,7 +49,7 @@ LinkedComment AI is a Chrome browser extension that enhances your LinkedIn exper
 ### First Use
 
 1. **Without API Key (Free)**: The extension works immediately with high-quality mock comments
-2. **With OpenAI API Key**: Add your API key in settings for AI-generated comments
+2. **With DeepSeek API Key**: Add your API key in settings for AI-generated comments
 
 ## 🎯 How It Works
 
@@ -68,17 +68,17 @@ LinkedComment AI is a Chrome browser extension that enhances your LinkedIn exper
 | **Enable Extension** | Turn AI comments on/off                       | ✅ Enabled        |
 | **Comment Tone**     | Professional, Friendly, or Witty              | 👔 Professional   |
 | **Auto-generate**    | Show AI buttons automatically while scrolling | ✅ Enabled        |
-| **OpenAI API Key**   | Optional key for AI-powered comments          | Empty (uses mock) |
+| **DeepSeek API Key** | Optional key for AI-powered comments          | Empty (uses mock) |
 
-### Getting an OpenAI API Key
+### Getting a DeepSeek API Key
 
-1. Visit [OpenAI Platform](https://platform.openai.com/)
+1. Visit [DeepSeek Platform](https://platform.deepseek.com/)
 2. Create an account or sign in
 3. Navigate to API Keys section
 4. Create a new API key
 5. Copy and paste into LinkedComment AI settings
 
-**Note**: API usage charges apply based on OpenAI's pricing. The extension uses GPT-4 for best results.
+**Note**: API usage charges apply based on DeepSeek's pricing. The extension uses DeepSeek Chat model for high-quality results at affordable rates.
 
 ## 📱 Usage Tips
 
@@ -160,8 +160,8 @@ cd linkedcomment-ai
 
 **API errors?**
 
-- Verify your OpenAI API key is correct
-- Check your OpenAI account has sufficient credits
+- Verify your DeepSeek API key is correct
+- Check your DeepSeek account has sufficient credits
 - Try using mock comments first (no API key needed)
 
 **Comment insertion not working?**
@@ -183,7 +183,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🙏 Acknowledgments
 
 - LinkedIn for providing the platform
-- OpenAI for GPT-4 API
+- DeepSeek for providing affordable, high-quality AI API
 - Chrome Extensions community for best practices
 - All contributors and users who make this project better
 

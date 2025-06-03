@@ -242,6 +242,7 @@ class LinkedCommentAI {
       ".social-actions-buttons",
       '[data-test-id="social-actions"]',
       ".feed-shared-social-action-bar",
+      ".feed-shared-footer__social-actions",
     ];
 
     let actionsContainer = null;
@@ -263,19 +264,29 @@ class LinkedCommentAI {
     // Create AI button
     const aiButton = this.createAIButton(postElement, postData);
 
-    // Insert the AI button after the Send button or at the end
-    const sendButton = actionsContainer.querySelector(
-      '[data-test-id*="send"], [aria-label*="Send"], .share-via-messaging-trigger'
+    // Better insertion logic - find the actual button container
+    const actionButtons = actionsContainer.querySelectorAll(
+      'button, [role="button"]'
     );
+    const lastButton = actionButtons[actionButtons.length - 1];
 
-    if (sendButton && sendButton.parentElement) {
-      // Insert after the Send button's parent container
-      sendButton.parentElement.parentElement.insertBefore(
-        aiButton,
-        sendButton.parentElement.nextSibling
-      );
+    if (lastButton && lastButton.parentElement) {
+      // Insert after the last button's container
+      const lastButtonContainer =
+        lastButton.closest(".feed-shared-footer__social-action") ||
+        lastButton.closest('[data-test-id*="social-action"]') ||
+        lastButton.parentElement;
+
+      if (lastButtonContainer.parentElement) {
+        lastButtonContainer.parentElement.insertBefore(
+          aiButton,
+          lastButtonContainer.nextSibling
+        );
+      } else {
+        actionsContainer.appendChild(aiButton);
+      }
     } else {
-      // If no Send button found, append to the actions container
+      // Fallback: append to the actions container
       actionsContainer.appendChild(aiButton);
     }
 
@@ -285,10 +296,11 @@ class LinkedCommentAI {
 
   createAIButton(postElement, postData) {
     const button = document.createElement("div");
-    button.className = "linkedcomment-ai-button";
+    button.className =
+      "linkedcomment-ai-button feed-shared-footer__social-action";
 
     button.innerHTML = `
-      <button class="linkedcomment-ai-btn" type="button">
+      <button class="linkedcomment-ai-btn" type="button" aria-label="Generate AI comment">
         <div class="linkedcomment-ai-content">
           <div class="linkedcomment-ai-icon">🤖</div>
           <span class="linkedcomment-ai-text">AI Comment</span>
@@ -324,7 +336,7 @@ class LinkedCommentAI {
       document.body.appendChild(popup);
 
       // Generate comment
-      await this.generateCommentForPopup(popup, postData);
+      await this.generateCommentForPopup(popup, postData, "professional");
     } catch (error) {
       console.error("Error generating comment:", error);
       // Show error popup
@@ -355,6 +367,21 @@ class LinkedCommentAI {
               100
             )}"</div>
           </div>
+
+          <div class="linkedcomment-ai-popup-tone-selection">
+            <label class="linkedcomment-ai-popup-tone-label">Tone:</label>
+            <div class="linkedcomment-ai-popup-tone-options">
+              <button class="linkedcomment-ai-popup-tone-btn active" data-tone="professional">
+                👔 Professional
+              </button>
+              <button class="linkedcomment-ai-popup-tone-btn" data-tone="friendly">
+                😊 Friendly
+              </button>
+              <button class="linkedcomment-ai-popup-tone-btn" data-tone="funny">
+                😄 Witty
+              </button>
+            </div>
+          </div>
           
           <div class="linkedcomment-ai-popup-result">
             <div class="linkedcomment-ai-popup-loading">
@@ -374,9 +401,6 @@ class LinkedCommentAI {
         </div>
         
         <div class="linkedcomment-ai-popup-actions" style="display: none;">
-          <button class="linkedcomment-ai-popup-btn linkedcomment-ai-popup-insert">
-            📝 Insert Comment
-          </button>
           <button class="linkedcomment-ai-popup-btn linkedcomment-ai-popup-copy">
             📋 Copy to Clipboard
           </button>
@@ -394,6 +418,8 @@ class LinkedCommentAI {
   }
 
   setupPopupEventListeners(popup, postElement, postData) {
+    let currentTone = "professional";
+
     // Close button
     const closeBtn = popup.querySelector(".linkedcomment-ai-popup-close");
     closeBtn.addEventListener("click", () => {
@@ -407,19 +433,23 @@ class LinkedCommentAI {
       }
     });
 
-    // Insert button
-    const insertBtn = popup.querySelector(".linkedcomment-ai-popup-insert");
-    insertBtn.addEventListener("click", async () => {
-      const commentText = popup.querySelector(
-        ".linkedcomment-ai-popup-comment-text"
-      ).textContent;
-      try {
-        await this.insertComment(postElement, commentText);
-        this.showSuccessMessage("Comment inserted successfully!");
-        popup.remove();
-      } catch (error) {
-        this.showErrorMessage("Failed to insert comment. Try copying instead.");
-      }
+    // Tone selection buttons
+    const toneButtons = popup.querySelectorAll(
+      ".linkedcomment-ai-popup-tone-btn"
+    );
+    toneButtons.forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        // Update active state
+        toneButtons.forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        // Update current tone
+        currentTone = btn.dataset.tone;
+
+        // Auto-regenerate with new tone
+        this.resetPopupToLoading(popup);
+        await this.generateCommentForPopup(popup, postData, currentTone);
+      });
     });
 
     // Copy button
@@ -447,8 +477,8 @@ class LinkedCommentAI {
     regenerateBtn.addEventListener("click", async () => {
       // Reset to loading state
       this.resetPopupToLoading(popup);
-      // Generate new comment
-      await this.generateCommentForPopup(popup, postData);
+      // Generate new comment with current tone
+      await this.generateCommentForPopup(popup, postData, currentTone);
     });
 
     // Escape key to close
@@ -461,7 +491,7 @@ class LinkedCommentAI {
     document.addEventListener("keydown", handleEscape);
   }
 
-  async generateCommentForPopup(popup, postData) {
+  async generateCommentForPopup(popup, postData, tone) {
     const loadingEl = popup.querySelector(".linkedcomment-ai-popup-loading");
     const commentEl = popup.querySelector(".linkedcomment-ai-popup-comment");
     const errorEl = popup.querySelector(".linkedcomment-ai-popup-error");
@@ -482,7 +512,7 @@ class LinkedCommentAI {
       // Call background script to generate comment
       const response = await chrome.runtime.sendMessage({
         action: "generateComment",
-        data: enhancedData,
+        data: { ...enhancedData, tone },
       });
 
       if (response.error) {
@@ -506,8 +536,6 @@ class LinkedCommentAI {
 
       // Show only regenerate button in error state
       actionsEl.style.display = "flex";
-      popup.querySelector(".linkedcomment-ai-popup-insert").style.display =
-        "none";
       popup.querySelector(".linkedcomment-ai-popup-copy").style.display =
         "none";
     }
@@ -525,8 +553,6 @@ class LinkedCommentAI {
     actionsEl.style.display = "none";
 
     // Reset button visibility
-    popup.querySelector(".linkedcomment-ai-popup-insert").style.display =
-      "inline-flex";
     popup.querySelector(".linkedcomment-ai-popup-copy").style.display =
       "inline-flex";
   }
@@ -587,69 +613,6 @@ class LinkedCommentAI {
     setTimeout(() => {
       if (popup.parentNode) popup.remove();
     }, 5000);
-  }
-
-  // Simplified insert method - just basic insertion for the popup approach
-  async insertComment(postElement, commentText) {
-    // First, try to open the comment section if it's not already open
-    const commentButton = postElement.querySelector(
-      '[data-test-id*="comment"], [aria-label*="Comment"]'
-    );
-    if (commentButton) {
-      commentButton.click();
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-    }
-
-    // Find comment input field
-    const commentSelectors = [
-      ".comments-comment-box__form textarea",
-      ".comments-comment-texteditor",
-      '[data-test-id="comments-comment-texteditor"]',
-      '.ql-editor[data-placeholder*="comment"]',
-      ".comments-comment-box .ql-editor",
-      ".comments-comment-box-comment__text-editor",
-      '[contenteditable="true"][data-placeholder*="comment"]',
-    ];
-
-    let commentInput = null;
-    const searchRoot =
-      postElement.closest(".feed-shared-update-v2") || postElement;
-
-    for (const selector of commentSelectors) {
-      commentInput =
-        searchRoot.querySelector(selector) ||
-        searchRoot.parentElement?.querySelector(selector) ||
-        document.querySelector(selector);
-      if (commentInput) break;
-    }
-
-    if (commentInput) {
-      commentInput.focus();
-      commentInput.click();
-
-      // Simple insertion - user can edit if needed
-      if (commentInput.tagName === "TEXTAREA") {
-        commentInput.value = commentText;
-      } else {
-        commentInput.innerHTML = commentText;
-        if (commentInput.innerText !== commentText) {
-          commentInput.innerText = commentText;
-        }
-      }
-
-      // Trigger essential events
-      commentInput.dispatchEvent(new Event("input", { bubbles: true }));
-      commentInput.dispatchEvent(new Event("change", { bubbles: true }));
-
-      commentInput.focus();
-      commentInput.scrollIntoView({ behavior: "smooth", block: "center" });
-
-      return true;
-    } else {
-      throw new Error(
-        "Could not find comment input field. Please click Comment first."
-      );
-    }
   }
 }
 

@@ -47,13 +47,17 @@ async function handleGenerateComment(postData) {
       chrome.storage.sync.get(["apiKey", "tone"], resolve);
     });
 
+    // Use tone from request data if provided, otherwise fall back to settings
+    const tone = postData.tone || settings.tone || "professional";
+    const requestData = { ...postData, tone };
+
     if (!settings.apiKey) {
       // Return mock comment if no API key is set
-      return await generateMockComment(postData, settings.tone);
+      return await generateMockComment(requestData, tone);
     }
 
-    // Call OpenAI API with user's API key
-    return await callOpenAI(postData, settings);
+    // Call DeepSeek API with user's API key
+    return await callDeepSeek(requestData, { ...settings, tone });
   } catch (error) {
     console.error("Error generating comment:", error);
     throw error;
@@ -103,8 +107,8 @@ async function generateMockComment(postData, tone = "professional") {
   };
 }
 
-// Call OpenAI API (when API key is provided)
-async function callOpenAI(postData, settings) {
+// Call DeepSeek API (when API key is provided)
+async function callDeepSeek(postData, settings) {
   const { apiKey, tone } = settings;
 
   const tonePrompts = {
@@ -116,48 +120,133 @@ async function callOpenAI(postData, settings) {
 
   const prompt = `${
     tonePrompts[tone] || tonePrompts.professional
-  } for the following post:\n\n"${
-    postData.text
-  }"\n\nKeep the comment concise (1-2 sentences), engaging, and add value to the conversation. Do not use hashtags.`;
+  } for the following post:
+
+"${postData.text}"
+
+IMPORTANT INSTRUCTIONS:
+- Respond with ONLY the comment text
+- Do NOT include explanations, alternatives, or instructions
+- Do NOT use phrases like "Here's a comment" or "Alternatively"
+- Keep it 1-2 sentences maximum
+- Make it engaging and specific to the post content
+- Do not use hashtags
+- Sound natural and human-like
+- Be ready to copy and paste directly
+
+Response should be the comment only, nothing else.`;
 
   try {
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model: "gpt-4",
-        messages: [
-          {
-            role: "system",
-            content:
-              "You are a helpful assistant that writes professional LinkedIn comments. Keep responses concise and engaging.",
-          },
-          {
-            role: "user",
-            content: prompt,
-          },
-        ],
-        max_tokens: 150,
-        temperature: 0.7,
-      }),
-    });
+    const response = await fetch(
+      "https://api.deepseek.com/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model: "deepseek-chat",
+          messages: [
+            {
+              role: "system",
+              content:
+                "You are a helpful assistant that writes LinkedIn comments. Respond with ONLY the comment text, no explanations, no alternatives, no instructions. Just the clean comment ready to copy and paste.",
+            },
+            {
+              role: "user",
+              content: prompt,
+            },
+          ],
+          max_tokens: 100,
+          temperature: 0.7,
+          stream: false,
+        }),
+      }
+    );
 
     if (!response.ok) {
-      throw new Error(`OpenAI API error: ${response.status}`);
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(
+        `DeepSeek API error: ${response.status} - ${
+          errorData.error?.message || "Unknown error"
+        }`
+      );
     }
 
     const data = await response.json();
+
+    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+      throw new Error("Invalid response from DeepSeek API");
+    }
+
+    let comment = data.choices[0].message.content.trim();
+
+    // Clean up the response to remove any unwanted text
+    comment = cleanDeepSeekResponse(comment);
+
     return {
-      comment: data.choices[0].message.content.trim(),
+      comment: comment,
     };
   } catch (error) {
-    console.error("OpenAI API error:", error);
+    console.error("DeepSeek API error:", error);
     // Fallback to mock comment if API fails
     return await generateMockComment(postData, tone);
   }
+}
+
+// Clean up DeepSeek response to ensure it's just the comment
+function cleanDeepSeekResponse(response) {
+  // Remove common unwanted phrases
+  const unwantedPhrases = [
+    /^Here's a [^:]*:/i,
+    /^Here is a [^:]*:/i,
+    /^\(Alternatively[^)]*\)/i,
+    /^Alternatively[^:]*:/i,
+    /Both options are/i,
+    /Choose based on/i,
+    /Would love to hear/i,
+    /Can't wait to hear/i,
+  ];
+
+  let cleaned = response.trim();
+
+  // Remove unwanted phrases
+  unwantedPhrases.forEach((phrase) => {
+    cleaned = cleaned.replace(phrase, "").trim();
+  });
+
+  // Split by common separators and take the first clean comment
+  const separators = [
+    /\n\n\(Alternatively/i,
+    /\n\nAlternatively/i,
+    /\n\nBoth options/i,
+    /\n\nChoose based/i,
+  ];
+
+  for (const separator of separators) {
+    const parts = cleaned.split(separator);
+    if (parts.length > 1) {
+      cleaned = parts[0].trim();
+      break;
+    }
+  }
+
+  // Remove surrounding quotes if present
+  if (
+    (cleaned.startsWith('"') && cleaned.endsWith('"')) ||
+    (cleaned.startsWith("'") && cleaned.endsWith("'"))
+  ) {
+    cleaned = cleaned.slice(1, -1).trim();
+  }
+
+  // Remove any remaining instructional text at the end
+  cleaned = cleaned.replace(
+    /\s*(Both options|Choose based|Would love to hear).*$/i,
+    ""
+  );
+
+  return cleaned.trim();
 }
 
 // Handle extension icon click
