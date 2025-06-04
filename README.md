@@ -4,11 +4,12 @@
 
 LinkedComment AI is a Chrome browser extension that enhances your LinkedIn experience by adding AI-powered comment generation directly into LinkedIn's interface. Get thoughtful, relevant comment suggestions with just one click!
 
-![LinkedComment AI Demo](https://via.placeholder.com/800x400?text=LinkedComment+AI+Demo)
+<!-- ![LinkedComment AI Demo](https://via.placeholder.com/800x400?text=LinkedComment+AI+Demo) -->
 
 ## ✨ Features
 
 - **🤖 AI-Powered Comments**: Generates professional, contextual comments for LinkedIn posts using DeepSeek AI
+- **🇮🇳 Hinglish Support**: Automatically detects Hindi content and uses Hindi-English mix for more personal, relatable comments
 - **🎯 Native Integration**: AI button seamlessly integrated next to LinkedIn's Send button
 - **🎨 Multiple Tones**: Choose between Professional, Friendly, or Witty comment styles
 - **⚡ One-Click Magic**: Generate and auto-insert comments with a single button click
@@ -193,6 +194,6 @@ LinkedComment AI is an independent project and is not affiliated with, endorsed 
 
 ---
 
-**Made with ❤️ for the LinkedIn community**
+<!-- **Made with ❤️ for the LinkedIn community**
 
-[Website](https://linkedcommentai.com) • [Privacy Policy](https://linkedcommentai.com/privacy) • [Terms of Service](https://linkedcommentai.com/terms)
+[Website](https://linkedcommentai.com) • [Privacy Policy](https://linkedcommentai.com/privacy) • [Terms of Service](https://linkedcommentai.com/terms) -->
