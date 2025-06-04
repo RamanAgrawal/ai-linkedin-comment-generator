@@ -9,6 +9,7 @@ class LinkedCommentAI {
       enabled: true,
       tone: "professional",
       autoGenerate: true,
+      includeHindi: true,
       apiKey: "",
     };
 
@@ -34,12 +35,14 @@ class LinkedCommentAI {
         "enabled",
         "tone",
         "autoGenerate",
+        "includeHindi",
         "apiKey",
       ]);
       this.settings = {
         enabled: result.enabled !== false,
         tone: result.tone || "professional",
         autoGenerate: result.autoGenerate !== false,
+        includeHindi: result.includeHindi !== false,
         apiKey: result.apiKey || "",
       };
       console.log("LinkedComment AI: Settings loaded", this.settings);
@@ -335,8 +338,7 @@ class LinkedCommentAI {
       const popup = this.createCommentPopup(postElement, postData);
       document.body.appendChild(popup);
 
-      // Generate comment
-      await this.generateCommentForPopup(popup, postData, "professional");
+      // The initial comment generation is now handled in setupPopupEventListeners
     } catch (error) {
       console.error("Error generating comment:", error);
       // Show error popup
@@ -382,6 +384,15 @@ class LinkedCommentAI {
               </button>
             </div>
           </div>
+
+          <div class="linkedcomment-ai-popup-hindi-toggle">
+            <label class="linkedcomment-ai-popup-hindi-label">
+              <input type="checkbox" class="linkedcomment-ai-popup-hindi-checkbox" ${
+                this.settings.includeHindi ? "checked" : ""
+              }>
+              <span class="linkedcomment-ai-popup-hindi-text">🇮🇳 Include Hindi/Hinglish</span>
+            </label>
+          </div>
           
           <div class="linkedcomment-ai-popup-result">
             <div class="linkedcomment-ai-popup-loading">
@@ -419,6 +430,7 @@ class LinkedCommentAI {
 
   setupPopupEventListeners(popup, postElement, postData) {
     let currentTone = "professional";
+    let includeHindi = this.settings.includeHindi;
 
     // Close button
     const closeBtn = popup.querySelector(".linkedcomment-ai-popup-close");
@@ -431,6 +443,23 @@ class LinkedCommentAI {
       if (e.target === popup) {
         popup.remove();
       }
+    });
+
+    // Hindi toggle
+    const hindiCheckbox = popup.querySelector(
+      ".linkedcomment-ai-popup-hindi-checkbox"
+    );
+    hindiCheckbox.addEventListener("change", async () => {
+      includeHindi = hindiCheckbox.checked;
+
+      // Auto-regenerate with new setting
+      this.resetPopupToLoading(popup);
+      await this.generateCommentForPopup(
+        popup,
+        postData,
+        currentTone,
+        includeHindi
+      );
     });
 
     // Tone selection buttons
@@ -448,7 +477,12 @@ class LinkedCommentAI {
 
         // Auto-regenerate with new tone
         this.resetPopupToLoading(popup);
-        await this.generateCommentForPopup(popup, postData, currentTone);
+        await this.generateCommentForPopup(
+          popup,
+          postData,
+          currentTone,
+          includeHindi
+        );
       });
     });
 
@@ -477,8 +511,13 @@ class LinkedCommentAI {
     regenerateBtn.addEventListener("click", async () => {
       // Reset to loading state
       this.resetPopupToLoading(popup);
-      // Generate new comment with current tone
-      await this.generateCommentForPopup(popup, postData, currentTone);
+      // Generate new comment with current tone and hindi setting
+      await this.generateCommentForPopup(
+        popup,
+        postData,
+        currentTone,
+        includeHindi
+      );
     });
 
     // Escape key to close
@@ -489,9 +528,17 @@ class LinkedCommentAI {
       }
     };
     document.addEventListener("keydown", handleEscape);
+
+    // Generate initial comment
+    this.generateCommentForPopup(popup, postData, currentTone, includeHindi);
   }
 
-  async generateCommentForPopup(popup, postData, tone) {
+  async generateCommentForPopup(
+    popup,
+    postData,
+    tone,
+    includeHindi = this.settings.includeHindi
+  ) {
     const loadingEl = popup.querySelector(".linkedcomment-ai-popup-loading");
     const commentEl = popup.querySelector(".linkedcomment-ai-popup-comment");
     const errorEl = popup.querySelector(".linkedcomment-ai-popup-error");
@@ -512,7 +559,7 @@ class LinkedCommentAI {
       // Call background script to generate comment
       const response = await chrome.runtime.sendMessage({
         action: "generateComment",
-        data: { ...enhancedData, tone },
+        data: { ...enhancedData, tone, includeHindi },
       });
 
       if (response.error) {

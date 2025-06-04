@@ -9,6 +9,7 @@ chrome.runtime.onInstalled.addListener(() => {
     enabled: true,
     tone: "professional",
     autoGenerate: true,
+    includeHindi: true,
     apiKey: "",
   });
 });
@@ -24,7 +25,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
     case "getSettings":
       chrome.storage.sync.get(
-        ["enabled", "tone", "autoGenerate", "apiKey"],
+        ["enabled", "tone", "autoGenerate", "includeHindi", "apiKey"],
         (result) => {
           sendResponse(result);
         }
@@ -44,20 +45,21 @@ async function handleGenerateComment(postData) {
   try {
     // Get user settings
     const settings = await new Promise((resolve) => {
-      chrome.storage.sync.get(["apiKey", "tone"], resolve);
+      chrome.storage.sync.get(["apiKey", "tone", "includeHindi"], resolve);
     });
 
     // Use tone from request data if provided, otherwise fall back to settings
     const tone = postData.tone || settings.tone || "professional";
-    const requestData = { ...postData, tone };
+    const includeHindi = settings.includeHindi !== false; // Default to true
+    const requestData = { ...postData, tone, includeHindi };
 
     if (!settings.apiKey) {
       // Return mock comment if no API key is set
-      return await generateMockComment(requestData, tone);
+      return await generateMockComment(requestData, tone, includeHindi);
     }
 
     // Call DeepSeek API with user's API key
-    return await callDeepSeek(requestData, { ...settings, tone });
+    return await callDeepSeek(requestData, { ...settings, tone, includeHindi });
   } catch (error) {
     console.error("Error generating comment:", error);
     throw error;
@@ -65,8 +67,12 @@ async function handleGenerateComment(postData) {
 }
 
 // Generate mock comment (for testing without API key)
-async function generateMockComment(postData, tone = "professional") {
-  const hasHindi = detectHindiContent(postData.text);
+async function generateMockComment(
+  postData,
+  tone = "professional",
+  includeHindi = true
+) {
+  const hasHindi = includeHindi && detectHindiContent(postData.text);
 
   const comments = {
     professional: hasHindi
@@ -143,10 +149,10 @@ async function generateMockComment(postData, tone = "professional") {
 
 // Call DeepSeek API (when API key is provided)
 async function callDeepSeek(postData, settings) {
-  const { apiKey, tone } = settings;
+  const { apiKey, tone, includeHindi } = settings;
 
-  // Detect if post contains Hindi content
-  const hasHindi = detectHindiContent(postData.text);
+  // Only use Hindi if user has enabled it AND post contains Hindi content
+  const hasHindi = includeHindi && detectHindiContent(postData.text);
 
   const tonePrompts = {
     professional: "Write a professional and thoughtful LinkedIn comment",
@@ -236,7 +242,7 @@ Response should be the comment only, nothing else.`;
   } catch (error) {
     console.error("DeepSeek API error:", error);
     // Fallback to mock comment if API fails
-    return await generateMockComment(postData, tone);
+    return await generateMockComment(postData, tone, includeHindi);
   }
 }
 
