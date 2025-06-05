@@ -539,6 +539,8 @@ class LinkedCommentAI {
         // Close the popup after a brief delay to show the success state
         setTimeout(() => {
           popup.remove();
+          // Auto-paste into LinkedIn comment box
+          this.focusAndPasteComment(postElement, commentText);
         }, 800);
       } catch (error) {
         this.showErrorMessage("Failed to copy comment.");
@@ -760,6 +762,99 @@ class LinkedCommentAI {
     } catch (error) {
       console.error("Error liking post:", error);
       this.showErrorMessage("Failed to like post");
+    }
+  }
+
+  focusAndPasteComment(postElement, commentText) {
+    try {
+      // LinkedIn comment input selectors (these may need updates as LinkedIn changes their DOM)
+      const commentInputSelectors = [
+        ".comments-comment-texteditor .ql-editor",
+        ".comments-comment-box__form .ql-editor",
+        '.comments-comment-texteditor [contenteditable="true"]',
+        '.comments-comment-box [contenteditable="true"]',
+        ".comments-comment-texteditor .ql-editor[data-placeholder]",
+        ".feed-shared-update-v2 .comments-comment-texteditor .ql-editor",
+        ".comments-comment-box-comment__text-editor .ql-editor",
+        '[data-test-id="comments-comment-texteditor"] .ql-editor',
+      ];
+
+      let commentInput = null;
+
+      // First try to find comment input within the post
+      for (const selector of commentInputSelectors) {
+        commentInput = postElement.querySelector(selector);
+        if (commentInput) break;
+      }
+
+      // If not found in post, look for any visible comment input on the page
+      if (!commentInput) {
+        for (const selector of commentInputSelectors) {
+          const inputs = document.querySelectorAll(selector);
+          for (const input of inputs) {
+            // Check if the input is visible and related to this post
+            if (input.offsetHeight > 0 && input.offsetWidth > 0) {
+              commentInput = input;
+              break;
+            }
+          }
+          if (commentInput) break;
+        }
+      }
+
+      if (!commentInput) {
+        // Try to click "Comment" button to open comment box first
+        const commentButton =
+          postElement.querySelector('button[aria-label*="Comment"]') ||
+          postElement.querySelector('[data-control-name="comment"]') ||
+          postElement.querySelector(
+            '.feed-shared-social-action-bar button[aria-label*="Comment"]'
+          );
+
+        if (commentButton) {
+          commentButton.click();
+
+          // Wait a bit for the comment box to appear, then try again
+          setTimeout(() => {
+            this.focusAndPasteComment(postElement, commentText);
+          }, 500);
+          return;
+        }
+
+        this.showErrorMessage("Could not find comment input field");
+        return;
+      }
+
+      // Focus the comment input
+      commentInput.focus();
+      commentInput.click();
+
+      // Clear existing content
+      commentInput.innerHTML = "";
+
+      // Insert the comment text
+      commentInput.innerHTML = `<p>${commentText}</p>`;
+      commentInput.textContent = commentText;
+
+      // Trigger input events to ensure LinkedIn detects the change
+      const inputEvent = new Event("input", { bubbles: true });
+      const changeEvent = new Event("change", { bubbles: true });
+
+      commentInput.dispatchEvent(inputEvent);
+      commentInput.dispatchEvent(changeEvent);
+
+      // Move cursor to end
+      const range = document.createRange();
+      const selection = window.getSelection();
+      range.selectNodeContents(commentInput);
+      range.collapse(false);
+      selection.removeAllRanges();
+      selection.addRange(range);
+
+      this.showSuccessMessage("Comment pasted! Ready to post.");
+    } catch (error) {
+      console.error("Error pasting comment:", error);
+      this.showErrorMessage("Failed to paste comment automatically");
     }
   }
 }
