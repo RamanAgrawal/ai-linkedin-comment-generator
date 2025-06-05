@@ -521,7 +521,7 @@ class LinkedCommentAI {
         
         <div class="linkedcomment-ai-popup-actions" style="display: none;">
           <button class="linkedcomment-ai-popup-btn linkedcomment-ai-popup-copy">
-            📋 Copy to Clipboard
+            📋 Comment
           </button>
           <button class="linkedcomment-ai-popup-btn linkedcomment-ai-popup-regenerate">
             🔄 Regenerate
