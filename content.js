@@ -496,9 +496,11 @@ class LinkedCommentAI {
         await navigator.clipboard.writeText(commentText);
         this.showSuccessMessage("Comment copied to clipboard!");
         copyBtn.textContent = "✅ Copied!";
+
+        // Close the popup after a brief delay to show the success state
         setTimeout(() => {
-          copyBtn.textContent = "📋 Copy to Clipboard";
-        }, 2000);
+          popup.remove();
+        }, 800);
       } catch (error) {
         this.showErrorMessage("Failed to copy comment.");
       }
