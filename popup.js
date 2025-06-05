@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
     enabled: document.getElementById("enabled"),
     autoGenerate: document.getElementById("autoGenerate"),
     includeHindi: document.getElementById("includeHindi"),
+    autoLike: document.getElementById("autoLike"),
     apiKey: document.getElementById("apiKey"),
     toggleApiKey: document.getElementById("toggleApiKey"),
     saveButton: document.getElementById("saveSettings"),
@@ -34,7 +35,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function loadSettings() {
     chrome.storage.sync.get(
-      ["enabled", "tone", "autoGenerate", "includeHindi", "apiKey"],
+      ["enabled", "tone", "autoGenerate", "includeHindi", "autoLike", "apiKey"],
       function (result) {
         currentSettings = result;
 
@@ -42,6 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
         elements.enabled.checked = result.enabled !== false; // Default to true
         elements.autoGenerate.checked = result.autoGenerate !== false; // Default to true
         elements.includeHindi.checked = result.includeHindi !== false; // Default to true
+        elements.autoLike.checked = result.autoLike !== false; // Default to true
         elements.apiKey.value = result.apiKey || "";
 
         // Set selected tone
@@ -99,6 +101,7 @@ document.addEventListener("DOMContentLoaded", function () {
       tone: selectedTone,
       autoGenerate: elements.autoGenerate.checked,
       includeHindi: elements.includeHindi.checked,
+      autoLike: elements.autoLike.checked,
       apiKey: elements.apiKey.value.trim(),
     };
 

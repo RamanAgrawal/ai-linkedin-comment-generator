@@ -10,6 +10,7 @@ class LinkedCommentAI {
       tone: "professional",
       autoGenerate: true,
       includeHindi: true,
+      autoLike: false,
       apiKey: "",
     };
 
@@ -36,6 +37,7 @@ class LinkedCommentAI {
         "tone",
         "autoGenerate",
         "includeHindi",
+        "autoLike",
         "apiKey",
       ]);
       this.settings = {
@@ -43,6 +45,7 @@ class LinkedCommentAI {
         tone: result.tone || "professional",
         autoGenerate: result.autoGenerate !== false,
         includeHindi: result.includeHindi !== false,
+        autoLike: result.autoLike !== false,
         apiKey: result.apiKey || "",
       };
       console.log("LinkedComment AI: Settings loaded", this.settings);
@@ -334,6 +337,11 @@ class LinkedCommentAI {
     button.style.opacity = "0.6";
 
     try {
+      // Auto-like the post immediately if setting is enabled
+      if (this.settings.autoLike) {
+        this.likePost(postElement);
+      }
+
       // Show popup with generating state
       const popup = this.createCommentPopup(postElement, postData);
       document.body.appendChild(popup);
@@ -382,18 +390,17 @@ class LinkedCommentAI {
               <button class="linkedcomment-ai-popup-tone-btn" data-tone="funny">
                 😄 Witty
               </button>
+              <button class="linkedcomment-ai-popup-toggle-btn" data-toggle="hindi" ${
+                this.settings.includeHindi ? 'data-active="true"' : ""
+              }>
+                🇮🇳 Hindi
+              </button>
+              <button class="linkedcomment-ai-popup-toggle-btn" data-toggle="like">
+                👍 Like
+              </button>
             </div>
           </div>
 
-          <div class="linkedcomment-ai-popup-hindi-toggle">
-            <label class="linkedcomment-ai-popup-hindi-label">
-              <input type="checkbox" class="linkedcomment-ai-popup-hindi-checkbox" ${
-                this.settings.includeHindi ? "checked" : ""
-              }>
-              <span class="linkedcomment-ai-popup-hindi-text">🇮🇳 Include Hindi/Hinglish</span>
-            </label>
-          </div>
-          
           <div class="linkedcomment-ai-popup-result">
             <div class="linkedcomment-ai-popup-loading">
               <div class="linkedcomment-ai-spinner"></div>
@@ -431,6 +438,7 @@ class LinkedCommentAI {
   setupPopupEventListeners(popup, postElement, postData) {
     let currentTone = "professional";
     let includeHindi = this.settings.includeHindi;
+    let shouldLikePost = false;
 
     // Close button
     const closeBtn = popup.querySelector(".linkedcomment-ai-popup-close");
@@ -443,23 +451,6 @@ class LinkedCommentAI {
       if (e.target === popup) {
         popup.remove();
       }
-    });
-
-    // Hindi toggle
-    const hindiCheckbox = popup.querySelector(
-      ".linkedcomment-ai-popup-hindi-checkbox"
-    );
-    hindiCheckbox.addEventListener("change", async () => {
-      includeHindi = hindiCheckbox.checked;
-
-      // Auto-regenerate with new setting
-      this.resetPopupToLoading(popup);
-      await this.generateCommentForPopup(
-        popup,
-        postData,
-        currentTone,
-        includeHindi
-      );
     });
 
     // Tone selection buttons
@@ -486,6 +477,49 @@ class LinkedCommentAI {
       });
     });
 
+    // Toggle buttons (Hindi and Like)
+    const toggleButtons = popup.querySelectorAll(
+      ".linkedcomment-ai-popup-toggle-btn"
+    );
+    toggleButtons.forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        // Toggle active state
+        const isActive = btn.hasAttribute("data-active");
+        if (isActive) {
+          btn.removeAttribute("data-active");
+          btn.classList.remove("active");
+        } else {
+          btn.setAttribute("data-active", "true");
+          btn.classList.add("active");
+        }
+
+        // Update corresponding variables
+        if (btn.dataset.toggle === "hindi") {
+          includeHindi = !isActive;
+          // Auto-regenerate with new Hindi setting
+          this.resetPopupToLoading(popup);
+          await this.generateCommentForPopup(
+            popup,
+            postData,
+            currentTone,
+            includeHindi
+          );
+        } else if (btn.dataset.toggle === "like") {
+          shouldLikePost = !isActive;
+        }
+      });
+    });
+
+    // Initialize toggle button states based on settings
+    shouldLikePost = this.settings.autoLike;
+
+    // Set Like button initial state
+    const likeToggleBtn = popup.querySelector('[data-toggle="like"]');
+    if (this.settings.autoLike && likeToggleBtn) {
+      likeToggleBtn.setAttribute("data-active", "true");
+      likeToggleBtn.classList.add("active");
+    }
+
     // Copy button
     const copyBtn = popup.querySelector(".linkedcomment-ai-popup-copy");
     copyBtn.addEventListener("click", async () => {
@@ -496,6 +530,11 @@ class LinkedCommentAI {
         await navigator.clipboard.writeText(commentText);
         this.showSuccessMessage("Comment copied to clipboard!");
         copyBtn.textContent = "✅ Copied!";
+
+        // Like the post if option is enabled
+        if (shouldLikePost) {
+          this.likePost(postElement);
+        }
 
         // Close the popup after a brief delay to show the success state
         setTimeout(() => {
@@ -662,6 +701,66 @@ class LinkedCommentAI {
     setTimeout(() => {
       if (popup.parentNode) popup.remove();
     }, 5000);
+  }
+
+  likePost(postElement) {
+    try {
+      // LinkedIn like button selectors (these may need updates as LinkedIn changes their DOM)
+      const likeSelectors = [
+        'button[aria-label*="Like"]',
+        'button[data-control-name="like"]',
+        '.feed-shared-social-action-bar button[aria-label*="Like"]',
+        '.social-actions-buttons button[aria-label*="Like"]',
+        'button[aria-pressed="false"][aria-label*="Like"]',
+        '.feed-shared-footer__social-actions button[aria-label*="Like"]',
+        '.feed-shared-social-actions button[aria-label*="Like"]',
+      ];
+
+      let likeButton = null;
+      for (const selector of likeSelectors) {
+        likeButton = postElement.querySelector(selector);
+        if (likeButton) break;
+      }
+
+      if (!likeButton) {
+        console.warn("Could not find like button for post");
+        this.showErrorMessage("Could not find like button");
+        return;
+      }
+
+      // Check if already liked (aria-pressed="true" or different text)
+      const isAlreadyLiked =
+        likeButton.getAttribute("aria-pressed") === "true" ||
+        likeButton.getAttribute("aria-label")?.toLowerCase().includes("unlike");
+
+      if (isAlreadyLiked) {
+        this.showSuccessMessage("Post was already liked!");
+        return;
+      }
+
+      // Click the like button
+      likeButton.click();
+
+      // Give a brief moment for LinkedIn to process the like
+      setTimeout(() => {
+        // Verify the like was successful
+        const isNowLiked =
+          likeButton.getAttribute("aria-pressed") === "true" ||
+          likeButton
+            .getAttribute("aria-label")
+            ?.toLowerCase()
+            .includes("unlike");
+
+        if (isNowLiked) {
+          this.showSuccessMessage("Post liked! 👍");
+        } else {
+          this.showErrorMessage("Failed to like post");
+        }
+      }, 500);
+    } catch (error) {
+      console.error("Error liking post:", error);
+      this.showErrorMessage("Failed to like post");
+    }
   }
 }
 
