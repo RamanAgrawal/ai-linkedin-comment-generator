@@ -13,7 +13,7 @@
 
       body {
         width: 350px;
-        min-height: 400px;
+        min-height: 480px;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
           sans-serif;
         background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
@@ -228,6 +228,243 @@
       .footer a:hover {
         text-decoration: underline;
       }
+
+      /* Tab Navigation Styles */
+      .tab-navigation {
+        display: flex;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 8px;
+        padding: 4px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .tab-button {
+        flex: 1;
+        padding: 10px 8px;
+        background: transparent;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 500;
+        color: #666;
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .tab-button.active {
+        background: #0077b5;
+        color: white;
+        box-shadow: 0 2px 4px rgba(0, 119, 181, 0.3);
+      }
+
+      .tab-button:hover:not(.active) {
+        background: rgba(0, 119, 181, 0.1);
+        color: #0077b5;
+      }
+
+      .tab-icon {
+        font-size: 16px;
+        line-height: 1;
+      }
+
+      .tab-label {
+        font-size: 10px;
+        font-weight: 600;
+      }
+
+      /* Tab Content Styles */
+      .tab-content {
+        display: none;
+      }
+
+      .tab-content.active {
+        display: block;
+        animation: fadeInTab 0.3s ease;
+      }
+
+      @keyframes fadeInTab {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Button Customization Styles */
+      .button-customization {
+        border: 2px solid #e1e5e9;
+        border-radius: 12px;
+        padding: 15px;
+        background: rgba(255, 255, 255, 0.8);
+        margin-bottom: 20px;
+      }
+
+      .customization-title {
+        font-weight: 600;
+        font-size: 15px;
+        color: #0077b5;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .icon-options {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+        margin-top: 8px;
+      }
+
+      .icon-option {
+        padding: 10px;
+        border: 2px solid #e1e5e9;
+        border-radius: 8px;
+        text-align: center;
+        cursor: pointer;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 40px;
+      }
+
+      .icon-option.active {
+        border-color: #0077b5;
+        background: #0077b5;
+        color: white;
+      }
+
+      .icon-option:hover {
+        border-color: #0077b5;
+        transform: translateY(-1px);
+      }
+
+      .color-options {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-top: 8px;
+      }
+
+      .color-option {
+        padding: 8px 12px;
+        border: 2px solid #e1e5e9;
+        border-radius: 8px;
+        text-align: center;
+        cursor: pointer;
+        font-size: 11px;
+        transition: all 0.3s ease;
+        background: white;
+        min-height: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .color-option.active {
+        border-color: #0077b5;
+        background: #0077b5;
+        color: white;
+      }
+
+      .color-option:hover {
+        border-color: #0077b5;
+        transform: translateY(-1px);
+      }
+
+      .color-preview {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-bottom: 2px;
+      }
+
+      .size-options {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-top: 8px;
+      }
+
+      .size-option {
+        padding: 8px 12px;
+        border: 2px solid #e1e5e9;
+        border-radius: 8px;
+        text-align: center;
+        cursor: pointer;
+        font-size: 12px;
+        transition: all 0.3s ease;
+        background: white;
+        min-height: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .size-option.active {
+        border-color: #0077b5;
+        background: #0077b5;
+        color: white;
+      }
+
+      .size-option:hover {
+        border-color: #0077b5;
+        transform: translateY(-1px);
+      }
+
+      .button-preview {
+        margin-top: 15px;
+        padding: 12px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        text-align: center;
+      }
+
+      .preview-label {
+        font-size: 11px;
+        color: #666;
+        margin-bottom: 8px;
+      }
+
+      .preview-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        background: white;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .preview-button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Compact spacing for tabs */
+      .tab-content .setting-group {
+        margin-bottom: 16px;
+      }
+
+      .tab-content .setting-group:last-child {
+        margin-bottom: 0;
+      }
     </style>
   </head>
   <body>
@@ -237,86 +474,194 @@
     </div>
 
     <div class="content">
-      <div class="setting-group">
-        <label class="setting-label">
-          Enable Extension
+      <!-- Tab Navigation -->
+      <div class="tab-navigation">
+        <button class="tab-button active" data-tab="general">
+          <div class="tab-icon">⚙️</div>
+          <div class="tab-label">General</div>
+        </button>
+        <button class="tab-button" data-tab="customization">
+          <div class="tab-icon">🎨</div>
+          <div class="tab-label">Button</div>
+        </button>
+        <button class="tab-button" data-tab="advanced">
+          <div class="tab-icon">🔧</div>
+          <div class="tab-label">Advanced</div>
+        </button>
+      </div>
+
+      <!-- General Settings Tab -->
+      <div class="tab-content active" id="general">
+        <div class="setting-group">
+          <label class="setting-label">
+            Enable Extension
+            <div class="setting-description">
+              Turn the AI comment suggestions on or off
+            </div>
+          </label>
+          <label class="toggle-switch">
+            <input type="checkbox" id="enabled" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-group">
+          <label class="setting-label" for="tone">Comment Tone</label>
           <div class="setting-description">
-            Turn the AI comment suggestions on or off
+            Choose the style of AI-generated comments
           </div>
-        </label>
-        <label class="toggle-switch">
-          <input type="checkbox" id="enabled" />
-          <span class="toggle-slider"></span>
-        </label>
-      </div>
-
-      <div class="setting-group">
-        <label class="setting-label" for="tone">Comment Tone</label>
-        <div class="setting-description">
-          Choose the style of AI-generated comments
-        </div>
-        <div class="tone-options">
-          <div class="tone-option" data-tone="professional">
-            <div>👔</div>
-            <div>Professional</div>
-          </div>
-          <div class="tone-option" data-tone="friendly">
-            <div>😊</div>
-            <div>Friendly</div>
-          </div>
-          <div class="tone-option" data-tone="funny">
-            <div>😄</div>
-            <div>Witty</div>
+          <div class="tone-options">
+            <div class="tone-option" data-tone="professional">
+              <div>👔</div>
+              <div>Professional</div>
+            </div>
+            <div class="tone-option" data-tone="friendly">
+              <div>😊</div>
+              <div>Friendly</div>
+            </div>
+            <div class="tone-option" data-tone="funny">
+              <div>😄</div>
+              <div>Witty</div>
+            </div>
           </div>
         </div>
+
+        <div class="setting-group">
+          <label class="setting-label">Auto-generate Comments</label>
+          <div class="setting-description">
+            Automatically show AI comments as you scroll
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="autoGenerate" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
       </div>
 
-      <div class="setting-group">
-        <label class="setting-label">Auto-generate Comments</label>
-        <div class="setting-description">
-          Automatically show AI comments as you scroll
+      <!-- Button Customization Tab -->
+      <div class="tab-content" id="customization">
+        <div class="setting-group">
+          <label class="setting-label">Button Icon</label>
+          <div class="setting-description">
+            Choose an icon for the AI button
+          </div>
+          <div class="icon-options" id="iconOptions">
+            <div class="icon-option active" data-icon="🤖">🤖</div>
+            <div class="icon-option" data-icon="💡">💡</div>
+            <div class="icon-option" data-icon="✨">✨</div>
+            <div class="icon-option" data-icon="🚀">🚀</div>
+            <div class="icon-option" data-icon="⭐">⭐</div>
+            <div class="icon-option" data-icon="💬">💬</div>
+            <div class="icon-option" data-icon="🎯">🎯</div>
+            <div class="icon-option" data-icon="🔥">🔥</div>
+          </div>
         </div>
-        <label class="toggle-switch">
-          <input type="checkbox" id="autoGenerate" />
-          <span class="toggle-slider"></span>
-        </label>
+
+        <div class="setting-group">
+          <label class="setting-label" for="buttonText"
+            >Button Text (Optional)</label
+          >
+          <div class="setting-description">
+            Customize the button text or leave empty for icon-only
+          </div>
+          <input
+            type="text"
+            id="buttonText"
+            placeholder="AI Comment (leave empty for icon only)"
+            maxlength="15"
+          />
+        </div>
+
+        <div class="setting-group">
+          <label class="setting-label">Button Color Theme</label>
+          <div class="setting-description">
+            Choose a color theme for the button
+          </div>
+          <div class="color-options" id="colorOptions">
+            <div class="color-option active" data-color="blue">
+              <div class="color-preview" style="background: #0077b5"></div>
+              LinkedIn
+            </div>
+            <div class="color-option" data-color="green">
+              <div class="color-preview" style="background: #16a085"></div>
+              Green
+            </div>
+            <div class="color-option" data-color="purple">
+              <div class="color-preview" style="background: #8e44ad"></div>
+              Purple
+            </div>
+            <div class="color-option" data-color="orange">
+              <div class="color-preview" style="background: #e67e22"></div>
+              Orange
+            </div>
+            <div class="color-option" data-color="red">
+              <div class="color-preview" style="background: #e74c3c"></div>
+              Red
+            </div>
+            <div class="color-option" data-color="teal">
+              <div class="color-preview" style="background: #1abc9c"></div>
+              Teal
+            </div>
+          </div>
+        </div>
+
+        <div class="setting-group">
+          <label class="setting-label">Button Size</label>
+          <div class="setting-description">Choose the button size</div>
+          <div class="size-options" id="sizeOptions">
+            <div class="size-option" data-size="small">Small</div>
+            <div class="size-option active" data-size="medium">Medium</div>
+            <div class="size-option" data-size="large">Large</div>
+          </div>
+        </div>
+
+        <div class="button-preview">
+          <div class="preview-label">Preview:</div>
+          <div class="preview-button" id="previewButton">
+            <span id="previewIcon">🤖</span>
+            <span id="previewText">AI Comment</span>
+          </div>
+        </div>
       </div>
 
-      <div class="setting-group">
-        <label class="setting-label">Include Hindi/Hinglish</label>
-        <div class="setting-description">
-          Use Hindi-English mix for more personal and relatable comments
+      <!-- Advanced Settings Tab -->
+      <div class="tab-content" id="advanced">
+        <div class="setting-group">
+          <label class="setting-label">Include Hindi/Hinglish</label>
+          <div class="setting-description">
+            Use Hindi-English mix for more personal and relatable comments
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="includeHindi" />
+            <span class="toggle-slider"></span>
+          </label>
         </div>
-        <label class="toggle-switch">
-          <input type="checkbox" id="includeHindi" />
-          <span class="toggle-slider"></span>
-        </label>
-      </div>
 
-      <div class="setting-group">
-        <label class="setting-label">Like Posts Automatically</label>
-        <div class="setting-description">
-          Automatically like posts when copying AI-generated comments
+        <div class="setting-group">
+          <label class="setting-label">Like Posts Automatically</label>
+          <div class="setting-description">
+            Automatically like posts when copying AI-generated comments
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="autoLike" />
+            <span class="toggle-slider"></span>
+          </label>
         </div>
-        <label class="toggle-switch">
-          <input type="checkbox" id="autoLike" />
-          <span class="toggle-slider"></span>
-        </label>
-      </div>
 
-      <div class="setting-group">
-        <label class="setting-label" for="apiKey"
-          >DeepSeek API Key (Optional)</label
-        >
-        <div class="setting-description">
-          Add your DeepSeek API key for better AI comments. Leave empty to use
-          mock comments.
-        </div>
-        <div class="api-key-group">
-          <input type="password" id="apiKey" placeholder="sk-..." />
-          <button type="button" class="api-key-toggle" id="toggleApiKey">
-            👁️
-          </button>
+        <div class="setting-group">
+          <label class="setting-label" for="apiKey"
+            >DeepSeek API Key (Optional)</label
+          >
+          <div class="setting-description">
+            Add your DeepSeek API key for better AI comments. Leave empty to use
+            mock comments.
+          </div>
+          <div class="api-key-group">
+            <input type="password" id="apiKey" placeholder="sk-..." />
+            <button type="button" class="api-key-toggle" id="toggleApiKey">
+              👁️
+            </button>
+          </div>
         </div>
       </div>
 
@@ -332,6 +677,16 @@
     </div>
 
     <div class="footer">
+      <div
+        style="
+          margin-bottom: 8px;
+          font-size: 11px;
+          color: #666;
+          text-align: center;
+        "
+      >
+        💡 Tips: Use 1-3 keys or arrow keys to switch tabs • Ctrl+S to save
+      </div>
       <a href="https://platform.deepseek.com/api_keys" target="_blank"
         >Get DeepSeek API Key</a
       >

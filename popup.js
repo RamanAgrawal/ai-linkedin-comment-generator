@@ -11,10 +11,63 @@ document.addEventListener("DOMContentLoaded", function () {
     saveButton: document.getElementById("saveSettings"),
     statusMessage: document.getElementById("statusMessage"),
     toneOptions: document.querySelectorAll(".tone-option"),
+    // Button customization elements
+    buttonText: document.getElementById("buttonText"),
+    iconOptions: document.querySelectorAll(".icon-option"),
+    colorOptions: document.querySelectorAll(".color-option"),
+    sizeOptions: document.querySelectorAll(".size-option"),
+    previewButton: document.getElementById("previewButton"),
+    previewIcon: document.getElementById("previewIcon"),
+    previewText: document.getElementById("previewText"),
+    // Tab elements
+    tabButtons: document.querySelectorAll(".tab-button"),
+    tabContents: document.querySelectorAll(".tab-content"),
   };
 
   let currentSettings = {};
   let selectedTone = "professional";
+
+  // Button customization defaults
+  let buttonCustomization = {
+    icon: "🤖",
+    text: "",
+    color: "blue",
+    size: "medium",
+  };
+
+  // Color theme configurations
+  const colorThemes = {
+    blue: {
+      primary: "#0077b5",
+      hover: "#005885",
+      light: "#e6f3ff",
+    },
+    green: {
+      primary: "#16a085",
+      hover: "#138d75",
+      light: "#e8f8f5",
+    },
+    purple: {
+      primary: "#8e44ad",
+      hover: "#7d3c98",
+      light: "#f4ecf7",
+    },
+    orange: {
+      primary: "#e67e22",
+      hover: "#d35400",
+      light: "#fef9e7",
+    },
+    red: {
+      primary: "#e74c3c",
+      hover: "#c0392b",
+      light: "#fadbd8",
+    },
+    teal: {
+      primary: "#1abc9c",
+      hover: "#16a085",
+      light: "#d5f4e6",
+    },
+  };
 
   // Load current settings
   loadSettings();
@@ -23,6 +76,13 @@ document.addEventListener("DOMContentLoaded", function () {
   elements.toggleApiKey.addEventListener("click", toggleApiKeyVisibility);
   elements.saveButton.addEventListener("click", saveSettings);
 
+  // Tab switching
+  elements.tabButtons.forEach((button) => {
+    button.addEventListener("click", function () {
+      switchTab(this.dataset.tab);
+    });
+  });
+
   // Tone selection
   elements.toneOptions.forEach((option) => {
     option.addEventListener("click", function () {
@@ -30,25 +90,96 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
+  // Button customization event listeners
+  elements.buttonText.addEventListener("input", function () {
+    buttonCustomization.text = this.value.trim();
+    updatePreview();
+  });
+
+  elements.iconOptions.forEach((option) => {
+    option.addEventListener("click", function () {
+      selectIcon(this.dataset.icon);
+    });
+  });
+
+  elements.colorOptions.forEach((option) => {
+    option.addEventListener("click", function () {
+      selectColor(this.dataset.color);
+    });
+  });
+
+  elements.sizeOptions.forEach((option) => {
+    option.addEventListener("click", function () {
+      selectSize(this.dataset.size);
+    });
+  });
+
   // Real-time API key validation
   elements.apiKey.addEventListener("input", validateApiKey);
 
+  // Tab switching function
+  function switchTab(targetTab) {
+    // Update tab buttons
+    elements.tabButtons.forEach((button) => {
+      button.classList.remove("active");
+      if (button.dataset.tab === targetTab) {
+        button.classList.add("active");
+      }
+    });
+
+    // Update tab contents
+    elements.tabContents.forEach((content) => {
+      content.classList.remove("active");
+      if (content.id === targetTab) {
+        content.classList.add("active");
+      }
+    });
+  }
+
   function loadSettings() {
     chrome.storage.sync.get(
-      ["enabled", "tone", "autoGenerate", "includeHindi", "autoLike", "apiKey"],
+      [
+        "enabled",
+        "tone",
+        "autoGenerate",
+        "includeHindi",
+        "autoLike",
+        "apiKey",
+        "buttonIcon",
+        "buttonText",
+        "buttonColor",
+        "buttonSize",
+      ],
       function (result) {
         currentSettings = result;
 
         // Set form values
-        elements.enabled.checked = result.enabled !== false; // Default to true
-        elements.autoGenerate.checked = result.autoGenerate !== false; // Default to true
-        elements.includeHindi.checked = result.includeHindi !== false; // Default to true
-        elements.autoLike.checked = result.autoLike !== false; // Default to true
+        elements.enabled.checked = result.enabled !== false;
+        elements.autoGenerate.checked = result.autoGenerate !== false;
+        elements.includeHindi.checked = result.includeHindi !== false;
+        elements.autoLike.checked = result.autoLike !== false;
         elements.apiKey.value = result.apiKey || "";
+
+        // Set button customization - allow empty text
+        buttonCustomization = {
+          icon: result.buttonIcon || "🤖",
+          text: result.buttonText || "",
+          color: result.buttonColor || "blue",
+          size: result.buttonSize || "medium",
+        };
+
+        elements.buttonText.value = buttonCustomization.text;
 
         // Set selected tone
         selectedTone = result.tone || "professional";
         selectTone(selectedTone);
+
+        // Set button customization UI
+        selectIcon(buttonCustomization.icon);
+        selectColor(buttonCustomization.color);
+        selectSize(buttonCustomization.size);
+
+        updatePreview();
 
         console.log("Settings loaded:", result);
       }
@@ -65,6 +196,102 @@ document.addEventListener("DOMContentLoaded", function () {
         option.classList.add("active");
       }
     });
+  }
+
+  function selectIcon(icon) {
+    buttonCustomization.icon = icon;
+
+    // Update UI
+    elements.iconOptions.forEach((option) => {
+      option.classList.remove("active");
+      if (option.dataset.icon === icon) {
+        option.classList.add("active");
+      }
+    });
+
+    updatePreview();
+  }
+
+  function selectColor(color) {
+    buttonCustomization.color = color;
+
+    // Update UI
+    elements.colorOptions.forEach((option) => {
+      option.classList.remove("active");
+      if (option.dataset.color === color) {
+        option.classList.add("active");
+      }
+    });
+
+    updatePreview();
+  }
+
+  function selectSize(size) {
+    buttonCustomization.size = size;
+
+    // Update UI
+    elements.sizeOptions.forEach((option) => {
+      option.classList.remove("active");
+      if (option.dataset.size === size) {
+        option.classList.add("active");
+      }
+    });
+
+    updatePreview();
+  }
+
+  function updatePreview() {
+    const theme = colorThemes[buttonCustomization.color];
+
+    // Update preview content
+    elements.previewIcon.textContent = buttonCustomization.icon;
+    elements.previewText.textContent = buttonCustomization.text || "";
+
+    // Hide text span if empty
+    if (!buttonCustomization.text) {
+      elements.previewText.style.display = "none";
+    } else {
+      elements.previewText.style.display = "inline";
+    }
+
+    // Update preview styling
+    elements.previewButton.style.background = theme.light;
+    elements.previewButton.style.borderColor = theme.primary;
+    elements.previewButton.style.color = theme.primary;
+
+    // Update size
+    const sizeStyles = {
+      small: { fontSize: "11px", padding: "6px 10px" },
+      medium: { fontSize: "13px", padding: "8px 12px" },
+      large: { fontSize: "15px", padding: "10px 16px" },
+    };
+
+    const size = sizeStyles[buttonCustomization.size];
+    elements.previewButton.style.fontSize = size.fontSize;
+
+    // Adjust padding for icon-only buttons
+    if (!buttonCustomization.text) {
+      const iconOnlyPadding = {
+        small: "6px",
+        medium: "8px",
+        large: "10px",
+      };
+      elements.previewButton.style.padding =
+        iconOnlyPadding[buttonCustomization.size];
+    } else {
+      elements.previewButton.style.padding = size.padding;
+    }
+
+    // Add hover effect simulation
+    elements.previewButton.onmouseenter = function () {
+      this.style.background = theme.primary;
+      this.style.color = "white";
+    };
+
+    elements.previewButton.onmouseleave = function () {
+      this.style.background = theme.light;
+      this.style.color = theme.primary;
+    };
   }
 
   function toggleApiKeyVisibility() {
@@ -103,6 +330,10 @@ document.addEventListener("DOMContentLoaded", function () {
       includeHindi: elements.includeHindi.checked,
       autoLike: elements.autoLike.checked,
       apiKey: elements.apiKey.value.trim(),
+      buttonIcon: buttonCustomization.icon,
+      buttonText: buttonCustomization.text,
+      buttonColor: buttonCustomization.color,
+      buttonSize: buttonCustomization.size,
     };
 
     chrome.storage.sync.set(newSettings, function () {
@@ -189,6 +420,35 @@ document.addEventListener("DOMContentLoaded", function () {
           e.preventDefault();
           saveSettings();
           break;
+      }
+    }
+
+    // Tab navigation with number keys
+    if (e.key >= "1" && e.key <= "3") {
+      e.preventDefault();
+      const tabIndex = parseInt(e.key) - 1;
+      const tabs = ["general", "customization", "advanced"];
+      if (tabs[tabIndex]) {
+        switchTab(tabs[tabIndex]);
+      }
+    }
+
+    // Arrow key navigation for tabs
+    if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+      const activeTab = document.querySelector(".tab-button.active");
+      if (activeTab) {
+        const tabs = Array.from(elements.tabButtons);
+        const currentIndex = tabs.indexOf(activeTab);
+        let newIndex;
+
+        if (e.key === "ArrowLeft") {
+          newIndex = currentIndex > 0 ? currentIndex - 1 : tabs.length - 1;
+        } else {
+          newIndex = currentIndex < tabs.length - 1 ? currentIndex + 1 : 0;
+        }
+
+        e.preventDefault();
+        switchTab(tabs[newIndex].dataset.tab);
       }
     }
   });

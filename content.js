@@ -5,6 +5,7 @@ class LinkedCommentAI {
     this.aiButtons = new Map();
     this.isInitialized = false;
     this.observer = null;
+    this.providerManager = null;
     this.settings = {
       enabled: true,
       tone: "professional",
@@ -12,7 +13,14 @@ class LinkedCommentAI {
       includeHindi: true,
       autoLike: false,
       apiKey: "",
+      buttonIcon: "🤖",
+      buttonText: "",
+      buttonColor: "blue",
+      buttonSize: "medium",
     };
+
+    // Initialize providers first
+    this.initializeProviders();
 
     // Load settings first, then initialize
     this.loadSettings().then(() => {
@@ -30,6 +38,35 @@ class LinkedCommentAI {
     });
   }
 
+  async initializeProviders() {
+    try {
+      // Wait for provider scripts to load
+      await this.waitForProviders();
+
+      // Initialize provider manager
+      if (window.ProviderManager) {
+        this.providerManager = new window.ProviderManager();
+        await this.providerManager.initialize();
+        console.log("LinkedComment AI: Providers initialized");
+      }
+    } catch (error) {
+      console.error("Error initializing providers:", error);
+    }
+  }
+
+  waitForProviders() {
+    return new Promise((resolve) => {
+      const checkProviders = () => {
+        if (window.ProviderManager && window.ButtonStylesProvider) {
+          resolve();
+        } else {
+          setTimeout(checkProviders, 100);
+        }
+      };
+      checkProviders();
+    });
+  }
+
   async loadSettings() {
     try {
       const result = await chrome.storage.sync.get([
@@ -39,6 +76,10 @@ class LinkedCommentAI {
         "includeHindi",
         "autoLike",
         "apiKey",
+        "buttonIcon",
+        "buttonText",
+        "buttonColor",
+        "buttonSize",
       ]);
       this.settings = {
         enabled: result.enabled !== false,
@@ -47,10 +88,30 @@ class LinkedCommentAI {
         includeHindi: result.includeHindi !== false,
         autoLike: result.autoLike !== false,
         apiKey: result.apiKey || "",
+        buttonIcon: result.buttonIcon || "🤖",
+        buttonText: result.buttonText || "",
+        buttonColor: result.buttonColor || "blue",
+        buttonSize: result.buttonSize || "medium",
       };
+
+      // Update button styles using provider
+      this.updateButtonStyles();
+
       console.log("LinkedComment AI: Settings loaded", this.settings);
     } catch (error) {
       console.error("Error loading settings:", error);
+    }
+  }
+
+  updateButtonStyles() {
+    if (this.providerManager) {
+      const buttonSettings = {
+        buttonIcon: this.settings.buttonIcon,
+        buttonText: this.settings.buttonText,
+        buttonColor: this.settings.buttonColor,
+        buttonSize: this.settings.buttonSize,
+      };
+      this.providerManager.updateButtonStyles(buttonSettings);
     }
   }
 
@@ -58,9 +119,15 @@ class LinkedCommentAI {
     switch (message.action) {
       case "settingsUpdated":
         this.settings = { ...this.settings, ...message.settings };
+
+        // Update button styles if customization changed
+        this.updateButtonStyles();
+
         if (!this.settings.enabled) {
           this.removeAllAIButtons();
         } else {
+          // Refresh all buttons with new customizations
+          this.refreshAllAIButtons();
           this.scanForPosts();
         }
         sendResponse({ success: true });
@@ -82,6 +149,18 @@ class LinkedCommentAI {
   removeAllAIButtons() {
     this.aiButtons.forEach((button) => button.remove());
     this.aiButtons.clear();
+  }
+
+  refreshAllAIButtons() {
+    // Remove all existing buttons and re-add them with new settings
+    this.aiButtons.forEach((button, postElement) => {
+      button.remove();
+      this.processedPosts.delete(postElement);
+    });
+    this.aiButtons.clear();
+
+    // Re-process all posts to apply new button customizations
+    this.scanForPosts();
   }
 
   init() {
@@ -305,11 +384,17 @@ class LinkedCommentAI {
     button.className =
       "linkedcomment-ai-button feed-shared-footer__social-action";
 
+    // Create button content conditionally based on whether text exists
+    const iconHtml = `<div class="linkedcomment-ai-icon">${this.settings.buttonIcon}</div>`;
+    const textHtml = this.settings.buttonText
+      ? `<span class="linkedcomment-ai-text">${this.settings.buttonText}</span>`
+      : "";
+
     button.innerHTML = `
       <button class="linkedcomment-ai-btn" type="button" aria-label="Generate AI comment">
         <div class="linkedcomment-ai-content">
-          <div class="linkedcomment-ai-icon">🤖</div>
-          <span class="linkedcomment-ai-text">AI Comment</span>
+          ${iconHtml}
+          ${textHtml}
         </div>
         <div class="linkedcomment-ai-loading" style="display: none;">
           <div class="linkedcomment-ai-spinner"></div>
@@ -318,8 +403,24 @@ class LinkedCommentAI {
       </button>
     `;
 
-    // Add click handler
+    // Apply customization using CSS classes and data attributes
     const btnElement = button.querySelector(".linkedcomment-ai-btn");
+
+    // Add customization classes
+    btnElement.classList.add(
+      `theme-${this.settings.buttonColor}`,
+      `size-${this.settings.buttonSize}`
+    );
+
+    // Add icon-only class if no text
+    if (!this.settings.buttonText) {
+      btnElement.classList.add("icon-only");
+    }
+
+    // Mark as customized to enable custom styling
+    btnElement.setAttribute("data-customized", "true");
+
+    // Add click handler
     btnElement.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();

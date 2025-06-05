@@ -12,8 +12,12 @@ LinkedComment AI is a Chrome browser extension that enhances your LinkedIn exper
 - **🇮🇳 Hinglish Support**: Automatically detects Hindi content and uses Hindi-English mix for more personal, relatable comments
 - **🎯 Native Integration**: AI button seamlessly integrated next to LinkedIn's Send button
 - **🎨 Multiple Tones**: Choose between Professional, Friendly, or Witty comment styles
+- **✨ Button Customization**: Personalize AI button appearance with custom icons, text, colors, and sizes
+- **🎭 Theme Options**: Choose from 6 beautiful color themes (LinkedIn Blue, Green, Purple, Orange, Red, Teal)
+- **📏 Size Control**: Adjust button size between Small, Medium, and Large
+- **🎯 Icon-Only Mode**: Option to show only icon without text for a minimal, clean look
 - **⚡ One-Click Magic**: Generate and auto-insert comments with a single button click
-- **🎛️ Customizable Settings**: Control tone, behavior, and API preferences
+- **🎛️ Customizable Settings**: Control tone, behavior, API preferences, and button appearance
 - **🔒 Privacy-First**: No data tracking or logging of your activity
 - **🚀 Fast & Lightweight**: Minimal performance impact on LinkedIn
 - **📱 Responsive Design**: Works seamlessly on desktop and mobile LinkedIn
@@ -64,12 +68,18 @@ LinkedComment AI is a Chrome browser extension that enhances your LinkedIn exper
 
 ### Settings Options
 
-| Setting              | Description                                   | Default           |
-| -------------------- | --------------------------------------------- | ----------------- |
-| **Enable Extension** | Turn AI comments on/off                       | ✅ Enabled        |
-| **Comment Tone**     | Professional, Friendly, or Witty              | 👔 Professional   |
-| **Auto-generate**    | Show AI buttons automatically while scrolling | ✅ Enabled        |
-| **DeepSeek API Key** | Optional key for AI-powered comments          | Empty (uses mock) |
+| Setting              | Description                                        | Default              |
+| -------------------- | -------------------------------------------------- | -------------------- |
+| **Enable Extension** | Turn AI comments on/off                            | ✅ Enabled           |
+| **Comment Tone**     | Professional, Friendly, or Witty                   | 👔 Professional      |
+| **Auto-generate**    | Show AI buttons automatically while scrolling      | ✅ Enabled           |
+| **Include Hindi**    | Use Hindi-English mix for more personal comments   | ✅ Enabled           |
+| **Auto-like Posts**  | Automatically like posts when using AI comments    | ❌ Disabled          |
+| **Button Icon**      | Choose from 8 different emojis                     | 🤖 Robot             |
+| **Button Text**      | Customize button text or leave empty for icon-only | 📝 Empty (icon-only) |
+| **Button Color**     | 6 color themes available                           | 🔵 LinkedIn Blue     |
+| **Button Size**      | Small, Medium, or Large                            | 📏 Medium            |
+| **DeepSeek API Key** | Optional key for AI-powered comments               | Empty (uses mock)    |
 
 ### Getting a DeepSeek API Key
 

@@ -15,7 +15,12 @@
   "content_scripts": [
     {
       "matches": ["https://www.linkedin.com/*"],
-      "js": ["content.js"],
+      "js": [
+        "providers/buttonStyles.js",
+        "providers/deepseek.js",
+        "providers/index.js",
+        "content.js"
+      ],
       "css": ["styles.css"],
       "run_at": "document_end"
     }

@@ -13,38 +13,80 @@
   justify-content: center;
 }
 
+/* Base AI Button Styles - Enhanced for Customization */
 .linkedcomment-ai-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: none;
-  border: none;
-  padding: 8px;
-  border-radius: 4px;
+  background: none !important;
+  border: none !important;
+  padding: 8px !important;
+  border-radius: 4px !important;
   cursor: pointer;
   font-size: 14px;
   font-weight: 600;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
     sans-serif;
-  color: rgba(0, 0, 0, 0.6);
-  transition: all 0.15s ease;
+  color: rgba(0, 0, 0, 0.6) !important;
+  transition: all 0.15s ease !important;
   height: 40px;
   min-width: 72px;
   position: relative;
   width: 100%;
   flex-direction: column;
   gap: 2px;
+  outline: none;
 }
 
-.linkedcomment-ai-btn:hover {
-  background-color: rgba(0, 0, 0, 0.08);
-  color: rgba(0, 0, 0, 0.9);
-  transform: none;
+/* Customized Button Styles - Override default when custom styling is applied */
+.linkedcomment-ai-btn[data-customized="true"] {
+  background: var(--ai-btn-bg, #e6f3ff) !important;
+  color: var(--ai-btn-color, #0077b5) !important;
+  border-radius: var(--ai-btn-radius, 6px) !important;
+  padding: var(--ai-btn-padding, 8px 12px) !important;
+  font-size: var(--ai-btn-font-size, 13px) !important;
+  gap: var(--ai-btn-gap, 6px) !important;
+  flex-direction: row !important;
+  height: auto !important;
+  min-width: auto !important;
+  font-weight: 500 !important;
 }
 
-.linkedcomment-ai-btn:active {
-  background-color: rgba(0, 0, 0, 0.12);
-  transform: scale(0.98);
+.linkedcomment-ai-btn[data-customized="true"]:hover {
+  background: var(--ai-btn-hover-bg, #0077b5) !important;
+  color: var(--ai-btn-hover-color, white) !important;
+  transform: var(--ai-btn-hover-transform, translateY(-1px)) !important;
+  box-shadow: var(
+    --ai-btn-hover-shadow,
+    0 2px 8px rgba(0, 119, 181, 0.2)
+  ) !important;
+}
+
+.linkedcomment-ai-btn[data-customized="true"]:active {
+  transform: var(--ai-btn-active-transform, translateY(0)) !important;
+  box-shadow: var(
+    --ai-btn-active-shadow,
+    0 1px 4px rgba(0, 119, 181, 0.3)
+  ) !important;
+}
+
+.linkedcomment-ai-btn[data-customized="true"]:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Default button hover states */
+.linkedcomment-ai-btn:not([data-customized="true"]):hover {
+  background-color: rgba(0, 0, 0, 0.08) !important;
+  color: rgba(0, 0, 0, 0.9) !important;
+  transform: none !important;
+}
+
+.linkedcomment-ai-btn:not([data-customized="true"]):active {
+  background-color: rgba(0, 0, 0, 0.12) !important;
+  transform: scale(0.98) !important;
 }
 
 .linkedcomment-ai-btn:disabled {
@@ -52,12 +94,19 @@
   opacity: 0.6;
 }
 
+/* Button Content Styling */
 .linkedcomment-ai-content {
   display: flex;
   align-items: center;
   flex-direction: column;
   gap: 2px;
   width: 100%;
+}
+
+.linkedcomment-ai-btn[data-customized="true"] .linkedcomment-ai-content {
+  flex-direction: row;
+  gap: var(--ai-btn-gap, 6px);
+  width: auto;
 }
 
 .linkedcomment-ai-icon {
@@ -68,6 +117,10 @@
   justify-content: center;
 }
 
+.linkedcomment-ai-btn[data-customized="true"] .linkedcomment-ai-icon {
+  font-size: var(--ai-icon-size, 16px);
+}
+
 .linkedcomment-ai-text {
   font-size: 12px;
   font-weight: 600;
@@ -75,6 +128,12 @@
   line-height: 1.2;
 }
 
+.linkedcomment-ai-btn[data-customized="true"] .linkedcomment-ai-text {
+  font-size: var(--ai-btn-font-size, 13px);
+  font-weight: 500;
+}
+
+/* Loading State Styling */
 .linkedcomment-ai-loading {
   display: none;
   align-items: center;
@@ -84,10 +143,22 @@
   width: 100%;
 }
 
+.linkedcomment-ai-btn[data-customized="true"] .linkedcomment-ai-loading {
+  flex-direction: row;
+  width: auto;
+  gap: var(--ai-btn-gap, 6px);
+  color: var(--ai-btn-color, #0077b5);
+}
+
 .linkedcomment-ai-loading span {
   font-size: 10px;
   font-weight: 500;
   text-align: center;
+}
+
+.linkedcomment-ai-btn[data-customized="true"] .linkedcomment-ai-loading span {
+  font-size: calc(var(--ai-btn-font-size, 13px) - 2px);
+  text-align: left;
 }
 
 .linkedcomment-ai-spinner {
@@ -99,6 +170,12 @@
   animation: spin 1s linear infinite;
 }
 
+.linkedcomment-ai-btn[data-customized="true"] .linkedcomment-ai-spinner {
+  width: calc(var(--ai-icon-size, 16px) - 2px);
+  height: calc(var(--ai-icon-size, 16px) - 2px);
+  border-top-color: var(--ai-btn-color, #0077b5);
+}
+
 @keyframes spin {
   0% {
     transform: rotate(0deg);
@@ -106,6 +183,65 @@
   100% {
     transform: rotate(360deg);
   }
+}
+
+/* Color Theme Classes */
+.linkedcomment-ai-btn.theme-blue {
+  --ai-btn-bg: #e6f3ff;
+  --ai-btn-border: 1px solid #0077b5;
+  --ai-btn-color: #0077b5;
+  --ai-btn-hover-bg: #0077b5;
+  --ai-btn-hover-color: white;
+  --ai-btn-hover-shadow: 0 2px 8px rgba(0, 119, 181, 0.33);
+}
+
+.linkedcomment-ai-btn.theme-green {
+  --ai-btn-bg: #e8f8f5;
+  --ai-btn-border: 1px solid #16a085;
+  --ai-btn-color: #16a085;
+  --ai-btn-hover-bg: #16a085;
+  --ai-btn-hover-color: white;
+  --ai-btn-hover-shadow: 0 2px 8px rgba(22, 160, 133, 0.33);
+}
+
+.linkedcomment-ai-btn.theme-purple {
+  --ai-btn-bg: #f4ecf7;
+  --ai-btn-border: 1px solid #8e44ad;
+  --ai-btn-color: #8e44ad;
+  --ai-btn-hover-bg: #8e44ad;
+  --ai-btn-hover-color: white;
+  --ai-btn-hover-shadow: 0 2px 8px rgba(142, 68, 173, 0.33);
+}
+
+.linkedcomment-ai-btn.theme-orange {
+  --ai-btn-bg: #fef9e7;
+  --ai-btn-border: 1px solid #e67e22;
+  --ai-btn-color: #e67e22;
+  --ai-btn-hover-bg: #e67e22;
+  --ai-btn-hover-color: white;
+  --ai-btn-hover-shadow: 0 2px 8px rgba(230, 126, 34, 0.33);
+}
+
+/* Size Classes */
+.linkedcomment-ai-btn.size-small {
+  --ai-btn-font-size: 11px;
+  --ai-btn-padding: 6px 10px;
+  --ai-icon-size: 14px;
+  --ai-btn-gap: 4px;
+}
+
+.linkedcomment-ai-btn.size-medium {
+  --ai-btn-font-size: 13px;
+  --ai-btn-padding: 8px 12px;
+  --ai-icon-size: 16px;
+  --ai-btn-gap: 6px;
+}
+
+.linkedcomment-ai-btn.size-large {
+  --ai-btn-font-size: 15px;
+  --ai-btn-padding: 10px 16px;
+  --ai-icon-size: 18px;
+  --ai-btn-gap: 8px;
 }
 
 /* Popup Styles */

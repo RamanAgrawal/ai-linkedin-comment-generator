@@ -1,5 +1,5 @@
 // AI Providers Index for LinkedComment AI
-// This file manages all available AI providers
+// This file manages all available AI providers and utility providers
 
 // Import providers
 // Note: In browser extension context, we'll load these via script tags
@@ -13,6 +13,16 @@ const PROVIDERS = {
   // OPENAI: 'openai',
   // ANTHROPIC: 'anthropic',
   // GEMINI: 'gemini'
+};
+
+/**
+ * Available Utility Providers
+ */
+const UTILITY_PROVIDERS = {
+  BUTTON_STYLES: "buttonStyles",
+  // Future utility providers
+  // THEMES: 'themes',
+  // ANALYTICS: 'analytics'
 };
 
 /**
@@ -44,11 +54,41 @@ class ProviderFactory {
   }
 
   /**
+   * Create a utility provider instance
+   * @param {string} utilityType - Type of utility provider
+   * @returns {Object} Utility provider instance
+   */
+  static createUtilityProvider(utilityType) {
+    switch (utilityType.toLowerCase()) {
+      case UTILITY_PROVIDERS.BUTTON_STYLES:
+        if (typeof ButtonStylesProvider === "undefined") {
+          throw new Error("ButtonStyles provider not loaded");
+        }
+        return new ButtonStylesProvider();
+
+      // Future utility providers
+      // case UTILITY_PROVIDERS.THEMES:
+      //   return new ThemesProvider();
+
+      default:
+        throw new Error(`Unknown utility provider type: ${utilityType}`);
+    }
+  }
+
+  /**
    * Get list of available providers
    * @returns {Array} List of provider types
    */
   static getAvailableProviders() {
     return Object.values(PROVIDERS);
+  }
+
+  /**
+   * Get list of available utility providers
+   * @returns {Array} List of utility provider types
+   */
+  static getAvailableUtilityProviders() {
+    return Object.values(UTILITY_PROVIDERS);
   }
 
   /**
@@ -58,6 +98,15 @@ class ProviderFactory {
    */
   static isProviderAvailable(providerType) {
     return Object.values(PROVIDERS).includes(providerType.toLowerCase());
+  }
+
+  /**
+   * Check if a utility provider is available
+   * @param {string} utilityType - Utility provider type to check
+   * @returns {boolean} True if utility provider is available
+   */
+  static isUtilityProviderAvailable(utilityType) {
+    return Object.values(UTILITY_PROVIDERS).includes(utilityType.toLowerCase());
   }
 }
 
@@ -70,6 +119,7 @@ class ProviderManager {
     this.currentProvider = null;
     this.providerType = PROVIDERS.DEEPSEEK;
     this.apiKey = null;
+    this.utilityProviders = new Map();
   }
 
   /**
@@ -86,10 +136,42 @@ class ProviderManager {
         this.apiKey
       );
       console.log(`Initialized ${this.providerType} provider`);
+
+      // Initialize utility providers
+      await this.initializeUtilityProviders();
     } catch (error) {
       console.error("Failed to initialize provider:", error);
       throw error;
     }
+  }
+
+  /**
+   * Initialize utility providers
+   */
+  async initializeUtilityProviders() {
+    try {
+      // Initialize ButtonStyles provider
+      const buttonStylesProvider = ProviderFactory.createUtilityProvider(
+        UTILITY_PROVIDERS.BUTTON_STYLES
+      );
+      this.utilityProviders.set(
+        UTILITY_PROVIDERS.BUTTON_STYLES,
+        buttonStylesProvider
+      );
+
+      console.log("Utility providers initialized");
+    } catch (error) {
+      console.warn("Some utility providers failed to initialize:", error);
+    }
+  }
+
+  /**
+   * Get utility provider
+   * @param {string} utilityType - Type of utility provider
+   * @returns {Object|null} Utility provider instance
+   */
+  getUtilityProvider(utilityType) {
+    return this.utilityProviders.get(utilityType) || null;
   }
 
   /**
@@ -104,6 +186,19 @@ class ProviderManager {
     }
 
     return await this.currentProvider.generateComment(postData, tone);
+  }
+
+  /**
+   * Update button styles using ButtonStyles provider
+   * @param {Object} settings - Button customization settings
+   */
+  updateButtonStyles(settings) {
+    const buttonStylesProvider = this.getUtilityProvider(
+      UTILITY_PROVIDERS.BUTTON_STYLES
+    );
+    if (buttonStylesProvider) {
+      buttonStylesProvider.updateButtonStyles(settings);
+    }
   }
 
   /**
@@ -140,6 +235,22 @@ class ProviderManager {
     this.apiKey = apiKey;
     await this.initialize({ provider: providerType, apiKey });
   }
+
+  /**
+   * Cleanup all providers
+   */
+  cleanup() {
+    // Cleanup utility providers
+    this.utilityProviders.forEach((provider) => {
+      if (provider.destroy && typeof provider.destroy === "function") {
+        provider.destroy();
+      }
+    });
+    this.utilityProviders.clear();
+
+    // Clear current provider
+    this.currentProvider = null;
+  }
 }
 
 // Export for different environments
@@ -147,12 +258,14 @@ if (typeof module !== "undefined" && module.exports) {
   // Node.js environment
   module.exports = {
     PROVIDERS,
+    UTILITY_PROVIDERS,
     ProviderFactory,
     ProviderManager,
   };
 } else if (typeof window !== "undefined") {
   // Browser environment
   window.PROVIDERS = PROVIDERS;
+  window.UTILITY_PROVIDERS = UTILITY_PROVIDERS;
   window.ProviderFactory = ProviderFactory;
   window.ProviderManager = ProviderManager;
 }
