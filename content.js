@@ -736,7 +736,7 @@ class LinkedCommentAI {
         likeButton.getAttribute("aria-label")?.toLowerCase().includes("unlike");
 
       if (isAlreadyLiked) {
-        this.showSuccessMessage("Post was already liked!");
+        this.showSuccessMessage("Post was already liked! 👍");
         return;
       }
 
@@ -852,9 +852,144 @@ class LinkedCommentAI {
       selection.addRange(range);
 
       this.showSuccessMessage("Comment pasted! Ready to post.");
+
+      // Auto-submit the comment after a brief delay
+      setTimeout(() => {
+        this.submitComment(commentInput, postElement);
+      }, 1000);
     } catch (error) {
       console.error("Error pasting comment:", error);
       this.showErrorMessage("Failed to paste comment automatically");
+    }
+  }
+
+  submitComment(commentInput, postElement) {
+    try {
+      // Enhanced LinkedIn comment submit button selectors (2024 updated)
+      const submitButtonSelectors = [
+        // Modern LinkedIn selectors
+        'button[data-test-id="comments-comment-box-submit-button"]',
+        ".comments-comment-box__submit-button",
+        'button[aria-label*="Post comment"]',
+        'button[aria-label*="Post"]',
+        'button[data-control-name="comment.post"]',
+
+        // Fallback selectors
+        '.comments-comment-texteditor button[type="submit"]',
+        '.comments-comment-box button[type="submit"]',
+        ".comments-comment-texteditor .artdeco-button--primary",
+        ".comments-comment-box .artdeco-button--primary",
+        ".comments-comment-texteditor button.comments-comment-box__submit-button",
+        '.comments-comment-box button.artdeco-button[data-control-name="comment.post"]',
+
+        // Generic fallbacks
+        '.comments-comment-texteditor button:not([aria-label*="Cancel"])',
+        '.comments-comment-box button:not([aria-label*="Cancel"])',
+        'button[class*="submit"]:not([disabled])',
+      ];
+
+      let submitButton = null;
+
+      // Method 1: Search in comment container
+      const commentContainer =
+        commentInput.closest(".comments-comment-texteditor") ||
+        commentInput.closest(".comments-comment-box") ||
+        commentInput.closest(".comments-comment-box__form") ||
+        commentInput.closest('[data-test-id*="comment"]');
+
+      if (commentContainer) {
+        for (let i = 0; i < submitButtonSelectors.length; i++) {
+          const selector = submitButtonSelectors[i];
+          submitButton = commentContainer.querySelector(selector);
+          if (
+            submitButton &&
+            !submitButton.disabled &&
+            submitButton.offsetHeight > 0
+          ) {
+            break;
+          }
+        }
+      }
+
+      // Method 2: Search within the post
+      if (!submitButton) {
+        for (let i = 0; i < submitButtonSelectors.length; i++) {
+          const selector = submitButtonSelectors[i];
+          submitButton = postElement.querySelector(selector);
+          if (
+            submitButton &&
+            !submitButton.disabled &&
+            submitButton.offsetHeight > 0
+          ) {
+            break;
+          }
+        }
+      }
+
+      // Method 3: Search by proximity to comment input
+      if (!submitButton) {
+        const allButtons = document.querySelectorAll("button");
+        const inputRect = commentInput.getBoundingClientRect();
+
+        for (const button of allButtons) {
+          if (button.disabled || button.offsetHeight === 0) continue;
+
+          const buttonRect = button.getBoundingClientRect();
+          const distance = Math.sqrt(
+            Math.pow(buttonRect.left - inputRect.left, 2) +
+              Math.pow(buttonRect.top - inputRect.top, 2)
+          );
+
+          // Check if button is close to input and looks like a submit button
+          if (distance < 300) {
+            const buttonText = button.textContent.toLowerCase();
+            const ariaLabel = (
+              button.getAttribute("aria-label") || ""
+            ).toLowerCase();
+
+            if (
+              buttonText.includes("post") ||
+              buttonText.includes("comment") ||
+              ariaLabel.includes("post") ||
+              ariaLabel.includes("comment") ||
+              button.type === "submit"
+            ) {
+              submitButton = button;
+              break;
+            }
+          }
+        }
+      }
+
+      if (!submitButton) {
+        this.showErrorMessage("Could not find comment submit button");
+        return;
+      }
+
+      // Check if button is enabled
+      if (submitButton.disabled || submitButton.hasAttribute("disabled")) {
+        this.showErrorMessage("Comment submit button is disabled");
+        return;
+      }
+
+      // Click the submit button
+      submitButton.click();
+
+      // Verify submission
+      setTimeout(() => {
+        const isEmpty =
+          commentInput.textContent.trim() === "" ||
+          commentInput.innerHTML.trim() === "";
+
+        if (isEmpty) {
+          this.showSuccessMessage("Comment posted successfully! 🎉");
+        } else {
+          this.showSuccessMessage("Comment submitted!");
+        }
+      }, 1500);
+    } catch (error) {
+      console.error("Error submitting comment:", error);
+      this.showErrorMessage("Failed to submit comment automatically");
     }
   }
 }
