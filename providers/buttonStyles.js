@@ -108,7 +108,7 @@ class ButtonStylesProvider {
     return `
       /* Dynamic Button Customization Styles */
       .linkedcomment-ai-btn[data-customized="true"] {
-        background: ${theme.light} !important;
+        background: transparent !important;
         color: ${theme.primary} !important;
         border-radius: ${size.borderRadius} !important;
         padding: ${
@@ -139,6 +139,7 @@ class ButtonStylesProvider {
         color: white !important;
         transform: translateY(-1px) !important;
         box-shadow: 0 2px 8px ${theme.shadow} !important;
+        border-color: ${theme.primary} !important;
       }
 
       .linkedcomment-ai-btn[data-customized="true"]:active {
