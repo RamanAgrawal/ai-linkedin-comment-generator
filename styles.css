@@ -40,7 +40,6 @@
 
 /* Customized Button Styles - Override default when custom styling is applied */
 .linkedcomment-ai-btn[data-customized="true"] {
-  background: var(--ai-btn-bg, #e6f3ff) !important;
   color: var(--ai-btn-color, #0077b5) !important;
   border-radius: var(--ai-btn-radius, 6px) !important;
   padding: var(--ai-btn-padding, 8px 12px) !important;
