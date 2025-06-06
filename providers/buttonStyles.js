@@ -109,6 +109,10 @@ class ButtonStylesProvider {
       /* Dynamic Button Customization Styles */
       .linkedcomment-ai-btn[data-customized="true"] {
         background: transparent !important;
+        background-color: transparent !important;
+        background-image: none !important;
+        border: none !important;
+        box-shadow: none !important;
         color: ${theme.primary} !important;
         border-radius: ${size.borderRadius} !important;
         padding: ${
@@ -136,10 +140,10 @@ class ButtonStylesProvider {
 
       .linkedcomment-ai-btn[data-customized="true"]:hover {
         background: ${theme.primary} !important;
+        background-color: ${theme.primary} !important;
         color: white !important;
         transform: translateY(-1px) !important;
         box-shadow: 0 2px 8px ${theme.shadow} !important;
-        border-color: ${theme.primary} !important;
       }
 
       .linkedcomment-ai-btn[data-customized="true"]:active {
@@ -152,6 +156,8 @@ class ButtonStylesProvider {
         opacity: 0.6 !important;
         transform: none !important;
         box-shadow: none !important;
+        background: transparent !important;
+        background-color: transparent !important;
       }
 
       .linkedcomment-ai-btn[data-customized="true"] .linkedcomment-ai-content {
@@ -160,17 +166,20 @@ class ButtonStylesProvider {
         width: auto !important;
         align-items: center !important;
         justify-content: center !important;
+        background: transparent !important;
       }
 
       .linkedcomment-ai-btn[data-customized="true"] .linkedcomment-ai-icon {
         font-size: ${size.iconSize} !important;
         line-height: 1 !important;
+        background: transparent !important;
       }
 
       .linkedcomment-ai-btn[data-customized="true"] .linkedcomment-ai-text {
         font-size: ${size.fontSize} !important;
         font-weight: 500 !important;
         white-space: nowrap !important;
+        background: transparent !important;
       }
 
       .linkedcomment-ai-btn[data-customized="true"] .linkedcomment-ai-loading {
@@ -178,11 +187,13 @@ class ButtonStylesProvider {
         width: auto !important;
         gap: ${size.gap} !important;
         color: ${theme.primary} !important;
+        background: transparent !important;
       }
 
       .linkedcomment-ai-btn[data-customized="true"] .linkedcomment-ai-loading span {
         font-size: calc(${size.fontSize} - 2px) !important;
         text-align: left !important;
+        background: transparent !important;
       }
 
       .linkedcomment-ai-btn[data-customized="true"] .linkedcomment-ai-spinner {
@@ -192,28 +203,19 @@ class ButtonStylesProvider {
         border-right-color: transparent !important;
         border-bottom-color: transparent !important;
         border-left-color: transparent !important;
+        background: transparent !important;
       }
 
-      /* Hover animation for customized buttons */
+      /* Remove hover animation background */
       .linkedcomment-ai-btn[data-customized="true"]::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-        transition: left 0.5s;
-      }
-
-      .linkedcomment-ai-btn[data-customized="true"]:hover::before {
-        left: 100%;
+        display: none !important;
       }
 
       /* Focus states for accessibility */
       .linkedcomment-ai-btn[data-customized="true"]:focus {
         outline: 2px solid ${theme.primary} !important;
         outline-offset: 2px !important;
+        background: transparent !important;
       }
 
       .linkedcomment-ai-btn[data-customized="true"]:focus:not(:focus-visible) {
