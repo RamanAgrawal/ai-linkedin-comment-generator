@@ -497,6 +497,12 @@
     padding: 10px;
     margin-bottom: 12px;
   }
+
+  /* Mobile textarea styles */
+  .linkedcomment-ai-popup-comment-textarea {
+    min-height: 140px;
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
 }
 
 /* Compact mode for smaller screens or dense layouts */
@@ -848,19 +854,16 @@
 
 .linkedcomment-ai-popup-comment-label {
   font-weight: 600;
-  color: #0077b5;
-  margin-bottom: 8px;
+  color: #333;
+  margin-bottom: 12px;
   font-size: 14px;
-  position: sticky;
-  top: 0;
-  background: #f0f8ff;
-  padding-bottom: 8px;
+  display: block;
 }
 
 .linkedcomment-ai-popup-comment-text {
-  line-height: 1.5;
-  color: #333;
-  font-size: 15px;
+  line-height: 1.6;
+  color: #444;
+  font-size: 14px;
   white-space: pre-wrap;
 }
 
@@ -928,4 +931,32 @@
   background: #218838;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+/* Direct Comment Editing Styles */
+.linkedcomment-ai-popup-comment-textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 12px;
+  border: 2px solid #e1e5e9;
+  border-radius: 8px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  resize: vertical;
+  transition: border-color 0.2s ease;
+  background: white;
+  color: #333;
+  margin-top: 8px;
+}
+
+.linkedcomment-ai-popup-comment-textarea:focus {
+  outline: none;
+  border-color: #0077b5;
+  box-shadow: 0 0 0 3px rgba(0, 119, 181, 0.1);
+}
+
+.linkedcomment-ai-popup-comment-textarea::placeholder {
+  color: #888;
+  font-style: italic;
 }

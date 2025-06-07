@@ -510,7 +510,9 @@ class LinkedCommentAI {
             
             <div class="linkedcomment-ai-popup-comment" style="display: none;">
               <div class="linkedcomment-ai-popup-comment-label">Generated Comment:</div>
-              <div class="linkedcomment-ai-popup-comment-text"></div>
+              <textarea class="linkedcomment-ai-popup-comment-textarea" 
+                        placeholder="Your generated comment will appear here..." 
+                        rows="4"></textarea>
             </div>
             
             <div class="linkedcomment-ai-popup-error" style="display: none;">
@@ -521,7 +523,7 @@ class LinkedCommentAI {
         
         <div class="linkedcomment-ai-popup-actions" style="display: none;">
           <button class="linkedcomment-ai-popup-btn linkedcomment-ai-popup-copy">
-            📋 Comment
+            📋 Copy to Clipboard
           </button>
           <button class="linkedcomment-ai-popup-btn linkedcomment-ai-popup-regenerate">
             🔄 Regenerate
@@ -621,12 +623,28 @@ class LinkedCommentAI {
       likeToggleBtn.classList.add("active");
     }
 
+    // Direct textarea editing with auto-save
+    const commentTextarea = popup.querySelector(
+      ".linkedcomment-ai-popup-comment-textarea"
+    );
+    let autoSaveTimeout;
+
+    // Auto-save functionality with debouncing
+    commentTextarea.addEventListener("input", () => {
+      clearTimeout(autoSaveTimeout);
+      autoSaveTimeout = setTimeout(() => {
+        // Auto-save happens silently - no toast notifications
+        const currentText = commentTextarea.value.trim();
+        if (currentText) {
+          // Comment is automatically saved as user types
+        }
+      }, 500); // 500ms debounce
+    });
+
     // Copy button
     const copyBtn = popup.querySelector(".linkedcomment-ai-popup-copy");
     copyBtn.addEventListener("click", async () => {
-      const commentText = popup.querySelector(
-        ".linkedcomment-ai-popup-comment-text"
-      ).textContent;
+      const commentText = commentTextarea.value.trim();
       try {
         await navigator.clipboard.writeText(commentText);
         this.showSuccessMessage("Comment copied to clipboard!");
@@ -710,8 +728,8 @@ class LinkedCommentAI {
         throw new Error(response.error);
       }
 
-      // Show generated comment
-      popup.querySelector(".linkedcomment-ai-popup-comment-text").textContent =
+      // Show generated comment in textarea
+      popup.querySelector(".linkedcomment-ai-popup-comment-textarea").value =
         response.comment;
       loadingEl.style.display = "none";
       commentEl.style.display = "block";
@@ -744,8 +762,11 @@ class LinkedCommentAI {
     actionsEl.style.display = "none";
 
     // Reset button visibility
-    popup.querySelector(".linkedcomment-ai-popup-copy").style.display =
-      "inline-flex";
+    const copyBtn = popup.querySelector(".linkedcomment-ai-popup-copy");
+    if (copyBtn) {
+      copyBtn.style.display = "inline-flex";
+      copyBtn.textContent = "📋 Comment";
+    }
   }
 
   truncateText(text, maxLength) {
