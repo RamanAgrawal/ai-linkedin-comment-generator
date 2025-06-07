@@ -229,6 +229,117 @@
         text-decoration: underline;
       }
 
+      /* Daily Stats Styles */
+      .daily-stats {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 20px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .daily-stats::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20"><defs><radialGradient id="a"><stop offset="20%" stop-color="%23fff" stop-opacity="0.1"/><stop offset="100%" stop-color="%23fff" stop-opacity="0"/></radialGradient></defs><circle fill="url(%23a)" cx="10" cy="10" r="10"/></svg>')
+          repeat;
+        opacity: 0.1;
+      }
+
+      .stats-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .stats-header h3 {
+        font-size: 16px;
+        font-weight: 600;
+        margin: 0;
+      }
+
+      .stats-refresh {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 28px;
+        height: 28px;
+        cursor: pointer;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+      }
+
+      .stats-refresh:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: rotate(180deg);
+      }
+
+      .stats-content {
+        text-align: center;
+        position: relative;
+        z-index: 1;
+      }
+
+      .stats-counter {
+        margin-bottom: 8px;
+      }
+
+      .stats-number {
+        font-size: 32px;
+        font-weight: 900;
+        color: #ffd700;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        display: inline-block;
+        transition: all 0.3s ease;
+      }
+
+      .stats-label {
+        display: block;
+        font-size: 14px;
+        font-weight: 500;
+        margin-top: 4px;
+        opacity: 0.9;
+      }
+
+      .stats-motivator {
+        font-size: 13px;
+        font-weight: 500;
+        opacity: 0.9;
+        font-style: italic;
+        transition: opacity 0.3s ease;
+      }
+
+      /* Stats Animation */
+      @keyframes statsUpdate {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.1);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      .stats-number.updated {
+        animation: statsUpdate 0.4s ease;
+        color: #90ee90 !important;
+      }
+
       /* Tab Navigation Styles */
       .tab-navigation {
         display: flex;
@@ -474,6 +585,25 @@
     </div>
 
     <div class="content">
+      <!-- Daily Stats Section -->
+      <div class="daily-stats" id="dailyStats">
+        <div class="stats-header">
+          <h3>📊 Daily Activity</h3>
+          <button class="stats-refresh" id="refreshStats" title="Refresh stats">
+            🔄
+          </button>
+        </div>
+        <div class="stats-content">
+          <div class="stats-counter">
+            <span class="stats-number" id="statsNumber">0</span>
+            <span class="stats-label">comments today</span>
+          </div>
+          <div class="stats-motivator" id="statsMotivator">
+            Ready to start engaging today? 🚀
+          </div>
+        </div>
+      </div>
+
       <!-- Tab Navigation -->
       <div class="tab-navigation">
         <button class="tab-button active" data-tab="general">

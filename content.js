@@ -19,6 +19,12 @@ class LinkedCommentAI {
       buttonSize: "medium",
     };
 
+    // Daily stats tracking
+    this.dailyStats = {
+      commentsToday: 0,
+      lastResetDate: this.getTodayDate(),
+    };
+
     // Initialize providers first
     this.initializeProviders();
 
@@ -80,6 +86,7 @@ class LinkedCommentAI {
         "buttonText",
         "buttonColor",
         "buttonSize",
+        "dailyStats",
       ]);
       this.settings = {
         enabled: result.enabled !== false,
@@ -93,6 +100,15 @@ class LinkedCommentAI {
         buttonColor: result.buttonColor || "blue",
         buttonSize: result.buttonSize || "medium",
       };
+
+      // Load daily stats
+      this.dailyStats = result.dailyStats || {
+        commentsToday: 0,
+        lastResetDate: this.getTodayDate(),
+      };
+
+      // Check if we need to reset daily counter
+      this.checkAndResetDailyStats();
 
       // Update button styles using provider
       this.updateButtonStyles();
@@ -139,6 +155,26 @@ class LinkedCommentAI {
           this.removeAllAIButtons();
         }
         sendResponse({ success: true });
+        break;
+
+      case "getDailyStats":
+        sendResponse({
+          success: true,
+          stats: {
+            commentsToday: this.dailyStats.commentsToday,
+            lastResetDate: this.dailyStats.lastResetDate,
+            motivationalText: this.getMotivationalText(),
+          },
+        });
+        break;
+
+      case "resetDailyStats":
+        this.dailyStats = {
+          commentsToday: 0,
+          lastResetDate: this.getTodayDate(),
+        };
+        this.saveDailyStats();
+        sendResponse({ success: true, stats: this.dailyStats });
         break;
 
       default:
@@ -538,6 +574,22 @@ class LinkedCommentAI {
     return popup;
   }
 
+  getMotivationalText() {
+    const count = this.dailyStats.commentsToday;
+
+    if (count === 0) {
+      return "Ready to start engaging today? 🚀";
+    } else if (count < 5) {
+      return "Great start! Keep the momentum going! 💪";
+    } else if (count < 10) {
+      return "You're doing amazing! 🔥";
+    } else if (count < 20) {
+      return "Networking superstar! 🌟";
+    } else {
+      return "Incredible productivity today! 🏆";
+    }
+  }
+
   setupPopupEventListeners(popup, postElement, postData) {
     let currentTone = "professional";
     let includeHindi = this.settings.includeHindi;
@@ -647,6 +699,10 @@ class LinkedCommentAI {
       const commentText = commentTextarea.value.trim();
       try {
         await navigator.clipboard.writeText(commentText);
+
+        // Increment daily counter
+        await this.incrementDailyComment();
+
         this.showSuccessMessage("Comment copied to clipboard!");
         copyBtn.textContent = "✅ Copied!";
 
@@ -1112,6 +1168,60 @@ class LinkedCommentAI {
     } catch (error) {
       console.error("Error submitting comment:", error);
       this.showErrorMessage("Failed to submit comment automatically");
+    }
+  }
+
+  // Daily stats management methods
+  getTodayDate() {
+    return new Date().toDateString();
+  }
+
+  async checkAndResetDailyStats() {
+    const today = this.getTodayDate();
+    if (this.dailyStats.lastResetDate !== today) {
+      // Reset counter for new day
+      this.dailyStats = {
+        commentsToday: 0,
+        lastResetDate: today,
+      };
+      await this.saveDailyStats();
+    }
+  }
+
+  async incrementDailyComment() {
+    this.dailyStats.commentsToday++;
+    await this.saveDailyStats();
+
+    // Show motivational message based on count
+    this.showMotivationalMessage();
+  }
+
+  async saveDailyStats() {
+    try {
+      await chrome.storage.sync.set({ dailyStats: this.dailyStats });
+    } catch (error) {
+      console.error("Error saving daily stats:", error);
+    }
+  }
+
+  showMotivationalMessage() {
+    const count = this.dailyStats.commentsToday;
+    let message = "";
+
+    if (count === 1) {
+      message = "🎉 First comment of the day! Keep it up!";
+    } else if (count === 5) {
+      message = "🔥 5 comments today! You're on fire!";
+    } else if (count === 10) {
+      message = "🚀 10 comments! You're a networking superstar!";
+    } else if (count === 20) {
+      message = "💪 20 comments today! Incredible engagement!";
+    } else if (count % 25 === 0) {
+      message = `🏆 ${count} comments today! Amazing productivity!`;
+    }
+
+    if (message) {
+      this.showSuccessMessage(message);
     }
   }
 }

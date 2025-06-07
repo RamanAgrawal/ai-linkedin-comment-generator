@@ -22,6 +22,11 @@ document.addEventListener("DOMContentLoaded", function () {
     // Tab elements
     tabButtons: document.querySelectorAll(".tab-button"),
     tabContents: document.querySelectorAll(".tab-content"),
+    // Daily stats elements
+    dailyStats: document.getElementById("dailyStats"),
+    statsNumber: document.getElementById("statsNumber"),
+    statsMotivator: document.getElementById("statsMotivator"),
+    refreshStats: document.getElementById("refreshStats"),
   };
 
   let currentSettings = {};
@@ -75,6 +80,12 @@ document.addEventListener("DOMContentLoaded", function () {
   // Event listeners
   elements.toggleApiKey.addEventListener("click", toggleApiKeyVisibility);
   elements.saveButton.addEventListener("click", saveSettings);
+
+  // Daily stats event listeners
+  elements.refreshStats.addEventListener("click", loadDailyStats);
+
+  // Load daily stats on popup open
+  loadDailyStats();
 
   // Tab switching
   elements.tabButtons.forEach((button) => {
@@ -452,4 +463,78 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
   });
+
+  // Daily Stats Functions
+  function loadDailyStats() {
+    // First try to get stats from content script
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      if (tabs[0] && tabs[0].url && tabs[0].url.includes("linkedin.com")) {
+        chrome.tabs.sendMessage(
+          tabs[0].id,
+          { action: "getDailyStats" },
+          function (response) {
+            if (chrome.runtime.lastError || !response) {
+              // Fallback to storage if content script not available
+              loadStatsFromStorage();
+            } else if (response.success) {
+              updateStatsDisplay(response.stats);
+            }
+          }
+        );
+      } else {
+        // Load from storage if not on LinkedIn
+        loadStatsFromStorage();
+      }
+    });
+  }
+
+  function loadStatsFromStorage() {
+    chrome.storage.sync.get(["dailyStats"], function (result) {
+      if (result.dailyStats) {
+        const stats = result.dailyStats;
+        const displayStats = {
+          commentsToday: stats.commentsToday || 0,
+          motivationalText: getMotivationalText(stats.commentsToday || 0),
+        };
+        updateStatsDisplay(displayStats);
+      } else {
+        // Default stats
+        updateStatsDisplay({
+          commentsToday: 0,
+          motivationalText: "Ready to start engaging today? 🚀",
+        });
+      }
+    });
+  }
+
+  function updateStatsDisplay(stats) {
+    // Add animation to number update
+    elements.statsNumber.classList.remove("updated");
+    elements.statsNumber.textContent = stats.commentsToday;
+    elements.statsMotivator.textContent = stats.motivationalText;
+
+    // Trigger animation
+    setTimeout(() => {
+      elements.statsNumber.classList.add("updated");
+    }, 50);
+
+    // Remove animation class after animation completes
+    setTimeout(() => {
+      elements.statsNumber.classList.remove("updated");
+    }, 450);
+  }
+
+  function getMotivationalText(count) {
+    if (count === 0) {
+      return "Ready to start engaging today? 🚀";
+    } else if (count < 5) {
+      return "Great start! Keep the momentum going! 💪";
+    } else if (count < 10) {
+      return "You're doing amazing! 🔥";
+    } else if (count < 20) {
+      return "Networking superstar! 🌟";
+    } else {
+      return "Incredible productivity today! 🏆";
+    }
+  }
 });
